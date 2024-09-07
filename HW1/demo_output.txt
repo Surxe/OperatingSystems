@@ -1,0 +1,34 @@
+Script started on Sat 07 Sep 2024 02:26:12 PM MDT
+osc@ubuntu:~/OperatingSystems/HW1$ make clean
+rm -f *.o luckygame
+osc@ubuntu:~/OperatingSystems/HW1$ make
+gcc -Wall -g -c main.c
+gcc -Wall -g -c LuckyNumber.c
+gcc -Wall -g -o luckygame main.o LuckyNumber.o
+osc@ubuntu:~/OperatingSystems/HW1$ sudo make install
+[sudo] password for osc: 
+sudo cp luckygame /usr/local/bin/
+osc@ubuntu:~/OperatingSystems/HW1$ luckygame
+Guess a number from 1 to 5: 3
+=: 1, <: 0, >: 0
+Play again..? (y/n): y
+Guess a number from 1 to 5: 3
+=: 2, <: 0, >: 0
+Play again..? (y/n): y
+Guess a number from 1 to 5: 3
+=: 2, <: 1, >: 0
+Play again..? (y/n): y
+Guess a number from 1 to 5: 3 1
+=: 2, <: 2, >: 0
+Play again..? (y/n): y
+Guess a number from 1 to 5: 5
+=: 2, <: 2, >: 1
+Play again..? (y/n): n
+Program completeosc@ubuntu:~/OperatingSystems/HW1$ sudo make uninstall
+sudo rm /usr/local/bin/luckygame
+osc@ubuntu:~/OperatingSystems/HW1$ luckygame
+bash: /usr/local/bin/luckygame: No such file or directory
+osc@ubuntu:~/OperatingSystems/HW1$ exit
+exit
+
+Script done on Sat 07 Sep 2024 02:27:34 PM MDT
