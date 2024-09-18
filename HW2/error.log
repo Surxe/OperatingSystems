@@ -1,23 +1,8 @@
 /home/osc/OperatingSystems/HW2/hello.c: In function ‘ethan_init’:
-/home/osc/OperatingSystems/HW2/hello.c:21:41: error: ‘ethan_proc_ops’ undeclared (first use in this function)
+/home/osc/OperatingSystems/HW2/hello.c:22:41: error: ‘ethan_proc_ops’ undeclared (first use in this function)
      proc_create(PROC_NAME, 0666, NULL, &ethan_proc_ops);
                                          ^
-/home/osc/OperatingSystems/HW2/hello.c:21:41: note: each undeclared identifier is reported only once for each function it appears in
-/home/osc/OperatingSystems/HW2/hello.c: In function ‘ethan_read’:
-/home/osc/OperatingSystems/HW2/hello.c:55:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-     struct timespec64 ts;
-     ^
-/home/osc/OperatingSystems/HW2/hello.c: At top level:
-/home/osc/OperatingSystems/HW2/hello.c:77:21: error: variable ‘ethan_proc_ops’ has initializer but incomplete type
- static const struct proc_ops ethan_proc_ops = {
-                     ^
-/home/osc/OperatingSystems/HW2/hello.c:78:5: error: unknown field ‘proc_read’ specified in initializer
-     .proc_read = ethan_read, // custom read
-     ^
-/home/osc/OperatingSystems/HW2/hello.c:78:18: warning: excess elements in struct initializer
-     .proc_read = ethan_read, // custom read
-                  ^
-/home/osc/OperatingSystems/HW2/hello.c:78:18: note: (near initialization for ‘ethan_proc_ops’)
+/home/osc/OperatingSystems/HW2/hello.c:22:41: note: each undeclared identifier is reported only once for each function it appears in
 make[2]: *** [/home/osc/OperatingSystems/HW2/hello.o] Error 1
 make[1]: *** [_module_/home/osc/OperatingSystems/HW2] Error 2
 make: *** [all] Error 2
