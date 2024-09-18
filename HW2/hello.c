@@ -13,6 +13,9 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("A simple module that generates an ASCII maze in the proc file system");
 MODULE_AUTHOR("Ethan E");
 
+/* Forward declaration of the file operations structure */
+static const struct file_operations ethan_proc_ops;
+
 /*
 Name: Ethan E
 Date: 9/18/24
