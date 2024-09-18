@@ -4,7 +4,8 @@
 #include <linux/uaccess.h> // For copy_to_user
 #include <linux/slab.h> // For kmalloc and kfree
 #include <linux/random.h> // For prandom_u32
-#include <linux/timekeeping.h> // For getnstimeofday()
+#include <linux/timekeeping.h> // For ktime_get_real_ts64()
+#include <linux/fs.h> // For file_operations
 
 #define PROC_NAME "ethan_maze"
 
@@ -39,6 +40,7 @@ Date: 9/18/24
 Description: Custom read function that outputs a generated ASCII maze
 */
 static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, loff_t *pos) {
+    struct timespec64 ts;
     int maze_width = 80;
     int maze_height = 28;
     char *maze;
@@ -52,7 +54,6 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
     if (!maze) return -ENOMEM;
 
     // Seed
-    struct timespec64 ts;
     ktime_get_real_ts64(&ts);
     prandom_seed(ts.tv_nsec);
 
@@ -74,8 +75,9 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
 }
 
 /* Struct for file operations */
-static const struct proc_ops ethan_proc_ops = {
-    .proc_read = ethan_read, // custom read
+static const struct file_operations ethan_proc_ops = {
+    .owner = THIS_MODULE,
+    .read = ethan_read, // custom read
 };
 
 /* Macros */
