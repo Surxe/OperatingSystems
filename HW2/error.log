@@ -1,8 +1,0 @@
-/home/osc/OperatingSystems/HW2/hello.c: In function ‘ethan_init’:
-/home/osc/OperatingSystems/HW2/hello.c:22:41: error: ‘ethan_proc_ops’ undeclared (first use in this function)
-     proc_create(PROC_NAME, 0666, NULL, &ethan_proc_ops);
-                                         ^
-/home/osc/OperatingSystems/HW2/hello.c:22:41: note: each undeclared identifier is reported only once for each function it appears in
-make[2]: *** [/home/osc/OperatingSystems/HW2/hello.o] Error 1
-make[1]: *** [_module_/home/osc/OperatingSystems/HW2] Error 2
-make: *** [all] Error 2
