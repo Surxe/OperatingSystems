@@ -52,9 +52,9 @@ Name: Ethan E
 Date: 9/18/24
 Description: Prim's algorithm to generate an ASCII maze
 */
-static void generate_maze(char *maze)
+static void generate_maze(char *maze_buffer)
 {
-    int maze[MAZE_WIDTH][MAZE_HEIGHT];
+    int maze_array[MAZE_WIDTH][MAZE_HEIGHT]; // Changed name to maze_array to avoid conflict
     int x, y;
     int i, j, k, nx, ny;
     int dx[] = {1, 0, -1, 0};
@@ -63,14 +63,14 @@ static void generate_maze(char *maze)
     /* Initialize maze with walls */
     for (i = 0; i < MAZE_WIDTH; i++) {
         for (j = 0; j < MAZE_HEIGHT; j++) {
-            maze[i][j] = CELL_WALL;
+            maze_array[i][j] = CELL_WALL;
         }
     }
 
     /* Start with an initial cell */
     x = (MAZE_WIDTH / 2) * 2;
     y = (MAZE_HEIGHT / 2) * 2;
-    maze[x][y] = CELL_PATH;
+    maze_array[x][y] = CELL_PATH;
 
     /* Set up a list of walls */
     int walls[MAZE_WIDTH * MAZE_HEIGHT][2];
@@ -81,7 +81,7 @@ static void generate_maze(char *maze)
         nx = x + dx[k] * 2;
         ny = y + dy[k] * 2;
         if (nx > 0 && ny > 0 && nx < MAZE_WIDTH && ny < MAZE_HEIGHT) {
-            maze[nx][ny] = CELL_PATH;
+            maze_array[nx][ny] = CELL_PATH;
             walls[num_walls][0] = nx;
             walls[num_walls][1] = ny;
             num_walls++;
@@ -104,19 +104,20 @@ static void generate_maze(char *maze)
             nx = x + dx[k] * 2;
             ny = y + dy[k] * 2;
             if (nx > 0 && ny > 0 && nx < MAZE_WIDTH && ny < MAZE_HEIGHT) {
-                if (maze[nx][ny] == CELL_WALL) {
+                if (maze_array[nx][ny] == CELL_WALL) {
                     int cx = x + dx[k];
                     int cy = y + dy[k];
-                    if (maze[cx][cy] == CELL_PATH) {
-                        maze[nx][ny] = CELL_PATH;
-                        maze[x][y] = CELL_PATH;
+                    if (maze_array[cx][cy] == CELL_PATH) {
+                        maze_array[nx][ny] = CELL_PATH;
+                        maze_array[x][y] = CELL_PATH;
 
                         /* Add new walls */
-                        for (int l = 0; l < 4; l++) {
+                        int l; // Declare the variable outside of the loop for C90 compatibility
+                        for (l = 0; l < 4; l++) {
                             int nnx = nx + dx[l] * 2;
                             int nny = ny + dy[l] * 2;
                             if (nnx > 0 && nny > 0 && nnx < MAZE_WIDTH && nny < MAZE_HEIGHT) {
-                                if (maze[nnx][nny] == CELL_WALL) {
+                                if (maze_array[nnx][nny] == CELL_WALL) {
                                     walls[num_walls][0] = nnx;
                                     walls[num_walls][1] = nny;
                                     num_walls++;
@@ -132,11 +133,11 @@ static void generate_maze(char *maze)
     /* Convert maze array to character array */
     for (i = 0; i < MAZE_WIDTH; i++) {
         for (j = 0; j < MAZE_HEIGHT; j++) {
-            maze[i * MAZE_HEIGHT + j] = (maze[i][j] == CELL_PATH) ? SPACE : WALL;
+            maze_buffer[i * (MAZE_HEIGHT + 1) + j] = (maze_array[i][j] == CELL_PATH) ? SPACE : WALL;
         }
-        maze[i * MAZE_HEIGHT + MAZE_HEIGHT] = '\n'; // Add newline at end of each row
+        maze_buffer[i * (MAZE_HEIGHT + 1) + MAZE_HEIGHT] = '\n'; // Add newline at end of each row
     }
-    maze[MAZE_WIDTH * MAZE_HEIGHT + MAZE_HEIGHT] = '\0'; // Terminate the maze
+    maze_buffer[MAZE_WIDTH * (MAZE_HEIGHT + 1)] = '\0'; // Terminate the maze
 }
 
 /*
@@ -146,26 +147,26 @@ Description: Custom read function that outputs a generated ASCII maze
 */
 static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, loff_t *pos) {
     struct timespec64 ts;
-    char *maze;
+    char *maze_buffer;
     ssize_t len;
 
     if (*pos > 0) return 0; // Prevent reading it many times
 
     // Allocate memory
-    maze = kmalloc(MAZE_WIDTH * MAZE_HEIGHT + MAZE_HEIGHT + 1, GFP_KERNEL);
-    if (!maze) return -ENOMEM;
+    maze_buffer = kmalloc(MAZE_WIDTH * (MAZE_HEIGHT + 1) + 1, GFP_KERNEL);
+    if (!maze_buffer) return -ENOMEM;
 
     // Seed
     ktime_get_real_ts64(&ts);
     prandom_seed(ts.tv_nsec);
 
     // Generate the maze
-    generate_maze(maze);
+    generate_maze(maze_buffer);
 
     // Copy it to user buffer
-    len = simple_read_from_buffer(buf, count, pos, maze, MAZE_WIDTH * MAZE_HEIGHT + MAZE_HEIGHT);
+    len = simple_read_from_buffer(buf, count, pos, maze_buffer, MAZE_WIDTH * (MAZE_HEIGHT + 1));
 
-    kfree(maze); // Free the memory
+    kfree(maze_buffer); // Free the memory
     return len;
 }
 
