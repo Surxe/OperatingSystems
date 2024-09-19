@@ -44,8 +44,8 @@ Description: Custom read function that outputs a generated ASCII maze
 */
 static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, loff_t *pos) {
     struct timespec64 ts;
-    int maze_width = 80;
-    int maze_height = 28;
+    int maze_width = 40;
+    int maze_height = 20;
     char *maze;
     int i, j, random_val;
     ssize_t len; 
