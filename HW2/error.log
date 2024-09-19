@@ -1,26 +1,10 @@
 /home/osc/OperatingSystems/HW2/hello.c: In function ‘generate_maze’:
-/home/osc/OperatingSystems/HW2/hello.c:57:9: error: ‘maze’ redeclared as different kind of symbol
-     int maze[MAZE_WIDTH][MAZE_HEIGHT];
-         ^
-/home/osc/OperatingSystems/HW2/hello.c:55:33: note: previous definition of ‘maze’ was here
- static void generate_maze(char *maze)
-                                 ^
 /home/osc/OperatingSystems/HW2/hello.c:76:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
      int walls[MAZE_WIDTH * MAZE_HEIGHT][2];
      ^
-/home/osc/OperatingSystems/HW2/hello.c:115:25: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
-                         for (int l = 0; l < 4; l++) {
+/home/osc/OperatingSystems/HW2/hello.c:115:25: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+                         int l; // Declare the variable outside of the loop for C90 compatibility
                          ^
-/home/osc/OperatingSystems/HW2/hello.c:115:25: note: use option -std=c99, -std=gnu99, -std=c11 or -std=gnu11 to compile your code
-/home/osc/OperatingSystems/HW2/hello.c:135:39: error: assignment to expression with array type
-             maze[i * MAZE_HEIGHT + j] = (maze[i][j] == CELL_PATH) ? SPACE : WALL;
-                                       ^
-/home/osc/OperatingSystems/HW2/hello.c:137:45: error: assignment to expression with array type
-         maze[i * MAZE_HEIGHT + MAZE_HEIGHT] = '\n'; // Add newline at end of each row
-                                             ^
-/home/osc/OperatingSystems/HW2/hello.c:139:50: error: assignment to expression with array type
-     maze[MAZE_WIDTH * MAZE_HEIGHT + MAZE_HEIGHT] = '\0'; // Terminate the maze
-                                                  ^
-make[2]: *** [/home/osc/OperatingSystems/HW2/hello.o] Error 1
-make[1]: *** [_module_/home/osc/OperatingSystems/HW2] Error 2
-make: *** [all] Error 2
+/home/osc/OperatingSystems/HW2/hello.c:141:1: warning: the frame size of 26920 bytes is larger than 1024 bytes [-Wframe-larger-than=]
+ }
+ ^
