@@ -60,6 +60,15 @@ static void generate_maze(char *maze_buffer)
     int dx[] = {1, 0, -1, 0};
     int dy[] = {0, 1, 0, -1};
 
+    /* Allocate memory for walls array to avoid stack overflow */
+    int (*walls)[2] = kmalloc_array(MAZE_WIDTH * MAZE_HEIGHT, sizeof(int[2]), GFP_KERNEL);
+    if (!walls) {
+        printk(KERN_ERR "Failed to allocate memory for walls.\n");
+        return;
+    }
+
+    int num_walls = 0; // Moved up to fix C90 issue
+
     /* Initialize maze with walls */
     for (i = 0; i < MAZE_WIDTH; i++) {
         for (j = 0; j < MAZE_HEIGHT; j++) {
@@ -71,10 +80,6 @@ static void generate_maze(char *maze_buffer)
     x = (MAZE_WIDTH / 2) * 2;
     y = (MAZE_HEIGHT / 2) * 2;
     maze_array[x][y] = CELL_PATH;
-
-    /* Set up a list of walls */
-    int walls[MAZE_WIDTH * MAZE_HEIGHT][2];
-    int num_walls = 0;
 
     /* Add initial walls */
     for (k = 0; k < 4; k++) {
@@ -112,7 +117,7 @@ static void generate_maze(char *maze_buffer)
                         maze_array[x][y] = CELL_PATH;
 
                         /* Add new walls */
-                        int l; // Declare the variable outside of the loop for C90 compatibility
+                        int l; // Declare outside of loop to avoid mixed declarations
                         for (l = 0; l < 4; l++) {
                             int nnx = nx + dx[l] * 2;
                             int nny = ny + dy[l] * 2;
@@ -129,7 +134,7 @@ static void generate_maze(char *maze_buffer)
             }
         }
     }
-    
+
     /* Convert maze array to character array */
     for (i = 0; i < MAZE_WIDTH; i++) {
         for (j = 0; j < MAZE_HEIGHT; j++) {
@@ -138,6 +143,8 @@ static void generate_maze(char *maze_buffer)
         maze_buffer[i * (MAZE_HEIGHT + 1) + MAZE_HEIGHT] = '\n'; // Add newline at end of each row
     }
     maze_buffer[MAZE_WIDTH * (MAZE_HEIGHT + 1)] = '\0'; // Terminate the maze
+
+    kfree(walls); // Free the dynamically allocated memory for walls
 }
 
 /*
