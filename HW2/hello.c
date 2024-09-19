@@ -29,27 +29,6 @@ static const struct file_operations ethan_proc_ops;
 /*
 Name: Ethan E
 Date: 9/18/24
-Description: Custom initialization function
-*/
-static int __init ethan_init(void) {
-    proc_create(PROC_NAME, 0666, NULL, &ethan_proc_ops);
-    printk(KERN_INFO "Ethan's module has been loaded.\n");
-    return 0;
-}
-
-/*
-Name: Ethan E
-Date: 9/18/24
-Description: Custom cleanup function for the kernel module.
-*/
-static void __exit ethan_exit(void) {
-    remove_proc_entry(PROC_NAME, NULL);
-    printk(KERN_INFO "Ethan's module has been unloaded.\n");
-}
-
-/*
-Name: Ethan E
-Date: 9/18/24
 Description: Prim's algorithm to generate an ASCII maze
 */
 static void generate_maze(char *maze_buffer)
@@ -57,7 +36,7 @@ static void generate_maze(char *maze_buffer)
     int maze_array[MAZE_WIDTH][MAZE_HEIGHT]; // Changed name to maze_array to avoid conflict
     int x, y;
     int i, j, k, nx, ny;
-    int dx[] = {1, 0, -1, 0};
+    int dx[] = {1, 0, -1, 0}; // Directions for neighbors
     int dy[] = {0, 1, 0, -1};
 
     /* Allocate memory for walls array to avoid stack overflow */
@@ -81,12 +60,11 @@ static void generate_maze(char *maze_buffer)
     y = (MAZE_HEIGHT / 2) * 2;
     maze_array[x][y] = CELL_PATH;
 
-    /* Add initial walls */
+    /* Add the surrounding walls of the initial cell */
     for (k = 0; k < 4; k++) {
-        nx = x + dx[k] * 2;
-        ny = y + dy[k] * 2;
-        if (nx > 0 && ny > 0 && nx < MAZE_WIDTH && ny < MAZE_HEIGHT) {
-            maze_array[nx][ny] = CELL_PATH;
+        nx = x + dx[k];
+        ny = y + dy[k];
+        if (nx >= 0 && ny >= 0 && nx < MAZE_WIDTH && ny < MAZE_HEIGHT && maze_array[nx][ny] == CELL_WALL) {
             walls[num_walls][0] = nx;
             walls[num_walls][1] = ny;
             num_walls++;
@@ -95,42 +73,42 @@ static void generate_maze(char *maze_buffer)
 
     /* Generate the maze using Prim's algorithm */
     while (num_walls > 0) {
+        /* Randomly select a wall from the list */
         int wall_index = prandom_u32() % num_walls;
         x = walls[wall_index][0];
         y = walls[wall_index][1];
-        
-        /* Remove wall from the list */
+
+        /* Swap the selected wall with the last wall in the list and reduce the list size */
         walls[wall_index][0] = walls[num_walls - 1][0];
         walls[wall_index][1] = walls[num_walls - 1][1];
         num_walls--;
 
-        /* Check neighbors */
+        /* Check neighbors of the wall to see if it connects two paths */
         for (k = 0; k < 4; k++) {
-            nx = x + dx[k] * 2;
-            ny = y + dy[k] * 2;
-            if (nx > 0 && ny > 0 && nx < MAZE_WIDTH && ny < MAZE_HEIGHT) {
-                if (maze_array[nx][ny] == CELL_WALL) {
-                    int cx = x + dx[k];
-                    int cy = y + dy[k];
-                    if (maze_array[cx][cy] == CELL_PATH) {
-                        maze_array[nx][ny] = CELL_PATH;
-                        maze_array[x][y] = CELL_PATH;
+            nx = x + dx[k];
+            ny = y + dy[k];
+            int opposite_x = x - dx[k];
+            int opposite_y = y - dy[k];
 
-                        /* Add new walls */
-                        int l; // Declare outside of loop to avoid mixed declarations
-                        for (l = 0; l < 4; l++) {
-                            int nnx = nx + dx[l] * 2;
-                            int nny = ny + dy[l] * 2;
-                            if (nnx > 0 && nny > 0 && nnx < MAZE_WIDTH && nny < MAZE_HEIGHT) {
-                                if (maze_array[nnx][nny] == CELL_WALL) {
-                                    walls[num_walls][0] = nnx;
-                                    walls[num_walls][1] = nny;
-                                    num_walls++;
-                                }
-                            }
-                        }
+            if (nx >= 0 && ny >= 0 && nx < MAZE_WIDTH && ny < MAZE_HEIGHT &&
+                opposite_x >= 0 && opposite_y >= 0 && opposite_x < MAZE_WIDTH && opposite_y < MAZE_HEIGHT &&
+                maze_array[nx][ny] == CELL_PATH && maze_array[opposite_x][opposite_y] == CELL_WALL) {
+
+                /* Turn the wall into a path */
+                maze_array[x][y] = CELL_PATH;
+                maze_array[opposite_x][opposite_y] = CELL_PATH;
+
+                /* Add the neighboring walls of the newly created path */
+                for (int l = 0; l < 4; l++) {
+                    int new_x = opposite_x + dx[l];
+                    int new_y = opposite_y + dy[l];
+                    if (new_x >= 0 && new_y >= 0 && new_x < MAZE_WIDTH && new_y < MAZE_HEIGHT && maze_array[new_x][new_y] == CELL_WALL) {
+                        walls[num_walls][0] = new_x;
+                        walls[num_walls][1] = new_y;
+                        num_walls++;
                     }
                 }
+                break;
             }
         }
     }
