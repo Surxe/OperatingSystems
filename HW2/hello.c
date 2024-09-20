@@ -68,8 +68,8 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
         maze[i * (maze_width + 1) + maze_width] = '\n'; // Add newline at end of each row
     }
 
-    // Set starting position (1,1) as a walkway
-    maze[1 * (maze_width + 1) + 1] = ' '; // Starting location
+    // Create entrance: set entrance space at (0, 1)
+    maze[0 * (maze_width + 1) + 1] = ' '; // Entrance
 
     // Set ending position (maze_height-2, maze_width-2) as a walkway
     maze[(maze_height - 2) * (maze_width + 1) + (maze_width - 2)] = ' '; // Ending location
