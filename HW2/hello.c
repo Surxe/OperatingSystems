@@ -47,8 +47,8 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
     int maze_width = 30;
     int maze_height = 20;
     char *maze;
-    int i, j, random_val;
-    ssize_t len; 
+    int i, j, random_val, x, y;
+    ssize_t len;
 
     if (*pos > 0) return 0; // Prevent reading it many times
 
@@ -60,20 +60,63 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
     ktime_get_real_ts64(&ts);
     prandom_seed(ts.tv_nsec);
 
-    // Generate the maze
+    // Initialize the maze with walls
     for (i = 0; i < maze_height; i++) {
         for (j = 0; j < maze_width; j++) {
-            random_val = prandom_u32() % 2; // 0 or 1
-            maze[i * (maze_width + 1) + j] = (random_val == 0) ? '#' : ' ';
+            maze[i * (maze_width + 1) + j] = '#'; // All walls
         }
         maze[i * (maze_width + 1) + maze_width] = '\n'; // Add newline at end of each row
     }
     maze[maze_width * maze_height + maze_height] = '\0'; // Null terminate the maze
 
+    // Prim's algorithm initialization
+    int *walls = kmalloc(maze_width * maze_height * sizeof(int), GFP_KERNEL);
+    int wall_count = 0;
+
+    // Start point
+    x = prandom_u32() % (maze_width / 2) * 2 + 1; // Ensure it's odd to avoid boundaries
+    y = prandom_u32() % (maze_height / 2) * 2 + 1; // Ensure it's odd to avoid boundaries
+
+    maze[y * (maze_width + 1) + x] = ' '; // Start point
+    walls[wall_count++] = y * maze_width + x;
+
+    while (wall_count > 0) {
+        // Choose a random wall
+        int wall_index = prandom_u32() % wall_count;
+        int wall = walls[wall_index];
+        int wx = wall % maze_width;
+        int wy = wall / maze_width;
+
+        // Remove the wall from the list
+        walls[wall_index] = walls[--wall_count];
+
+        // Check if it's a valid wall
+        int cx, cy, count = 0;
+        if (wx > 1 && maze[(wy) * (maze_width + 1) + wx - 2] == ' ') { cx = wx - 2; cy = wy; count++; }
+        if (wx < maze_width - 2 && maze[(wy) * (maze_width + 1) + wx + 2] == ' ') { cx = wx + 2; cy = wy; count++; }
+        if (wy > 1 && maze[(wy - 2) * (maze_width + 1) + wx] == ' ') { cx = wx; cy = wy - 2; count++; }
+        if (wy < maze_height - 2 && maze[(wy + 2) * (maze_width + 1) + wx] == ' ') { cx = wx; cy = wy + 2; count++; }
+
+        if (count == 1) { // It is a valid wall
+            maze[wy * (maze_width + 1) + wx] = ' '; // Break the wall
+
+            // Add new walls
+            if (wx > 1 && maze[(wy) * (maze_width + 1) + wx - 2] == '#') walls[wall_count++] = wy * maze_width + (wx - 2);
+            if (wx < maze_width - 2 && maze[(wy) * (maze_width + 1) + wx + 2] == '#') walls[wall_count++] = wy * maze_width + (wx + 2);
+            if (wy > 1 && maze[(wy - 2) * (maze_width + 1) + wx] == '#') walls[wall_count++] = (wy - 2) * maze_width + wx;
+            if (wy < maze_height - 2 && maze[(wy + 2) * (maze_width + 1) + wx] == '#') walls[wall_count++] = (wy + 2) * maze_width + wx;
+        }
+    }
+
+    // Add entrance and exit
+    maze[0 * (maze_width + 1) + 1] = ' '; // Entrance
+    maze[(maze_height - 1) * (maze_width + 1) + maze_width - 2] = ' '; // Exit
+
     // Copy it to user buffer
     len = simple_read_from_buffer(buf, count, pos, maze, maze_width * maze_height + maze_height);
 
-    kfree(maze); // Free the memory
+    kfree(walls); // Free the walls memory
+    kfree(maze); // Free the maze memory
     return len;
 }
 
