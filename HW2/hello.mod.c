@@ -21,14 +21,14 @@ __attribute__((section("__versions"))) = {
 	{ 0x2397e50a, __VMLINUX_SYMBOL_STR(remove_proc_entry) },
 	{ 0x27e1a049, __VMLINUX_SYMBOL_STR(printk) },
 	{ 0x55da9811, __VMLINUX_SYMBOL_STR(proc_create_data) },
-	{ 0xdb7305a1, __VMLINUX_SYMBOL_STR(__stack_chk_fail) },
 	{ 0x37a0cba, __VMLINUX_SYMBOL_STR(kfree) },
 	{ 0x619cb7dd, __VMLINUX_SYMBOL_STR(simple_read_from_buffer) },
-	{ 0xa735db59, __VMLINUX_SYMBOL_STR(prandom_u32) },
 	{ 0x4411c503, __VMLINUX_SYMBOL_STR(prandom_seed) },
 	{ 0x211f68f1, __VMLINUX_SYMBOL_STR(getnstimeofday64) },
 	{ 0x85d4c68, __VMLINUX_SYMBOL_STR(kmem_cache_alloc_trace) },
 	{ 0xe9423d3f, __VMLINUX_SYMBOL_STR(kmalloc_caches) },
+	{ 0xdb7305a1, __VMLINUX_SYMBOL_STR(__stack_chk_fail) },
+	{ 0xa735db59, __VMLINUX_SYMBOL_STR(prandom_u32) },
 	{ 0xbdfb6dbb, __VMLINUX_SYMBOL_STR(__fentry__) },
 };
 
@@ -38,4 +38,4 @@ __attribute__((section(".modinfo"))) =
 "depends=";
 
 
-MODULE_INFO(srcversion, "43906D0D82E99A95909DC12");
+MODULE_INFO(srcversion, "AA8EC1127C2FF251BD6D09D");
