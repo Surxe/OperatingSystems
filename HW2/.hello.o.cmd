@@ -798,6 +798,7 @@ deps_/home/osc/OperatingSystems/HW2/hello.o := \
   include/linux/irqnr.h \
   include/uapi/linux/irqnr.h \
   arch/x86/include/asm/archrandom.h \
+  /usr/lib/gcc/x86_64-linux-gnu/5/include/stdbool.h \
 
 /home/osc/OperatingSystems/HW2/hello.o: $(deps_/home/osc/OperatingSystems/HW2/hello.o)
 
