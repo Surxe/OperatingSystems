@@ -56,7 +56,7 @@ Description: Function to generate a maze using Prim's algorithm
 static void generate_maze(char *maze) {
     struct Cell cells[MAZE_WIDTH * MAZE_HEIGHT];
     int cellCount = 0;
-    int i, j, index;
+    int i, j, randIndex;
 
     // Initialize the maze with walls
     for (i = 0; i < MAZE_HEIGHT; i++) {
@@ -72,10 +72,10 @@ static void generate_maze(char *maze) {
 
     // Randomly add walls to the list
     while (cellCount > 0) {
-        int randIndex = prandom_u32() % cellCount;
-        struct Cell current = cells[randIndex];
-        int x = current.x;
-        int y = current.y;
+        randIndex = prandom_u32() % cellCount;
+        struct Cell selectedCell = cells[randIndex];
+        int x = selectedCell.x;
+        int y = selectedCell.y;
         cells[randIndex] = cells[--cellCount]; // Remove from list
 
         // Add neighbors
