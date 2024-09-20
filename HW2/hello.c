@@ -10,25 +10,11 @@
 #define PROC_NAME "ethan_maze"
 
 MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("A simple module that generates an ASCII maze in the proc file system using Kruskal's algorithm");
+MODULE_DESCRIPTION("A simple module that generates an ASCII maze in the proc file system using the Hunt and Kill algorithm");
 MODULE_AUTHOR("Ethan E");
 
 /* Forward declaration of the file operations structure */
 static const struct file_operations ethan_proc_ops;
-
-struct Cell {
-    int x, y;
-};
-
-struct Edge {
-    struct Cell start;
-    struct Cell end;
-};
-
-static struct Edge* edges;
-static int edge_count;
-static int maze_width = 30;
-static int maze_height = 20;
 
 /*
 Name: Ethan E
@@ -48,28 +34,37 @@ Description: Custom cleanup function for the kernel module.
 */
 static void __exit ethan_exit(void) {
     remove_proc_entry(PROC_NAME, NULL);
-    kfree(edges);
     printk(KERN_INFO "Ethan's module has been unloaded.\n");
 }
 
-/*
-Name: Ethan E
-Date: 9/19/24
-Description: Function to generate edges for the maze.
-*/
-static void generate_edges(void) {
-    int i, j;
-    edge_count = 0;
-    edges = kmalloc(sizeof(struct Edge) * (maze_width * maze_height * 2), GFP_KERNEL);
-    
-    for (i = 0; i < maze_height; i++) {
-        for (j = 0; j < maze_width; j++) {
-            if (j < maze_width - 1) {
-                edges[edge_count++] = (struct Edge){{j, i}, {j + 1, i}}; // Horizontal edge
-            }
-            if (i < maze_height - 1) {
-                edges[edge_count++] = (struct Edge){{j, i}, {j, i + 1}}; // Vertical edge
-            }
+/* Maze dimensions */
+#define MAZE_WIDTH 30
+#define MAZE_HEIGHT 20
+
+/* Maze generation functions */
+static void init_maze(char *maze) {
+    for (int i = 0; i < MAZE_HEIGHT; i++) {
+        for (int j = 0; j < MAZE_WIDTH; j++) {
+            maze[i * (MAZE_WIDTH + 1) + j] = '#'; // Fill the maze with walls
+        }
+        maze[i * (MAZE_WIDTH + 1) + MAZE_WIDTH] = '\n'; // Newline at end of each row
+    }
+    maze[MAZE_WIDTH * MAZE_HEIGHT + MAZE_HEIGHT] = '\0'; // Null terminate the maze
+}
+
+static void carve_path(char *maze, int x, int y) {
+    maze[y * (MAZE_WIDTH + 1) + x] = ' '; // Carve the path
+
+    int directions[4][2] = { {1, 0}, {0, 1}, {-1, 0}, {0, -1} }; // Right, Down, Left, Up
+    int dir, nx, ny;
+
+    for (int i = 0; i < 4; i++) {
+        dir = prandom_u32() % 4; // Randomize the order of directions
+        nx = x + directions[dir][0];
+        ny = y + directions[dir][1];
+
+        if (nx > 0 && nx < MAZE_WIDTH && ny > 0 && ny < MAZE_HEIGHT && maze[ny * (MAZE_WIDTH + 1) + nx] == '#') {
+            carve_path(maze, nx, ny);
         }
     }
 }
@@ -77,103 +72,39 @@ static void generate_edges(void) {
 /*
 Name: Ethan E
 Date: 9/19/24
-Description: Function to find the root of a set for union-find.
-*/
-static int find(int *parent, int i) {
-    if (parent[i] != i) {
-        parent[i] = find(parent, parent[i]); // Path compression
-    }
-    return parent[i];
-}
-
-/*
-Name: Ethan E
-Date: 9/19/24
-Description: Function to union two sets.
-*/
-static void union_sets(int *parent, int x, int y) {
-    int xroot = find(parent, x);
-    int yroot = find(parent, y);
-    if (xroot != yroot) {
-        parent[yroot] = xroot;
-    }
-}
-
-/*
-Name: Ethan E
-Date: 9/19/24
-Description: Function to generate the maze using Kruskal's algorithm.
-*/
-static void generate_maze(char *maze) {
-    int i, *parent;
-
-    // Initialize the maze with walls
-    for (i = 0; i < maze_height; i++) {
-        memset(maze + i * (maze_width + 1), '#', maze_width);
-        maze[i * (maze_width + 1) + maze_width] = '\n'; // Newline at end of each row
-    }
-    maze[maze_width * maze_height + maze_height] = '\0'; // Null terminate
-
-    // Generate edges
-    generate_edges();
-
-    // Initialize union-find structure
-    parent = kmalloc(sizeof(int) * (maze_width * maze_height), GFP_KERNEL);
-    for (i = 0; i < maze_width * maze_height; i++) {
-        parent[i] = i;
-    }
-
-    // Shuffle edges
-    for (i = edge_count - 1; i > 0; i--) {
-        int j = prandom_u32() % (i + 1);
-        struct Edge temp = edges[i];
-        edges[i] = edges[j];
-        edges[j] = temp;
-    }
-
-    // Apply Kruskal's algorithm
-    for (i = 0; i < edge_count; i++) {
-        int start_index = edges[i].start.y * maze_width + edges[i].start.x;
-        int end_index = edges[i].end.y * maze_width + edges[i].end.x;
-        
-        int start_root = find(parent, start_index);
-        int end_root = find(parent, end_index);
-
-        if (start_root != end_root) {
-            union_sets(parent, start_index, end_index);
-            // Set walls to spaces in maze
-            maze[edges[i].start.y * (maze_width + 1) + edges[i].start.x] = ' ';
-            maze[edges[i].end.y * (maze_width + 1) + edges[i].end.x] = ' ';
-        }
-    }
-
-    // Create entrance and exit
-    maze[0 * (maze_width + 1) + 1] = ' '; // Entrance at (0, 1)
-    maze[(maze_height - 1) * (maze_width + 1) + (maze_width - 2)] = ' '; // Exit at (height-1, width-2)
-
-    kfree(parent);
-}
-
-/*
-Name: Ethan E
-Date: 9/19/24
-Description: Custom read function that outputs the generated ASCII maze.
+Description: Custom read function that outputs a generated ASCII maze using the Hunt and Kill algorithm.
 */
 static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, loff_t *pos) {
+    struct timespec64 ts;
     char *maze;
-    ssize_t len; 
+    ssize_t len;
 
-    if (*pos > 0) return 0; // Prevent reading it many times
+    if (*pos > 0) return 0; // Prevent reading it multiple times
 
-    // Allocate memory for maze
-    maze = kmalloc((maze_width * maze_height) + maze_height + 1, GFP_KERNEL);
+    // Allocate memory
+    maze = kmalloc((MAZE_WIDTH * MAZE_HEIGHT) + MAZE_HEIGHT + 1, GFP_KERNEL); // Extra space for newlines and null terminator
     if (!maze) return -ENOMEM;
 
-    // Generate the maze
-    generate_maze(maze);
+    // Seed
+    ktime_get_real_ts64(&ts);
+    prandom_seed(ts.tv_nsec);
 
-    // Copy it to user buffer
-    len = simple_read_from_buffer(buf, count, pos, maze, maze_width * maze_height + maze_height);
+    // Initialize the maze with walls
+    init_maze(maze);
+
+    // Random starting point
+    int start_x = prandom_u32() % (MAZE_WIDTH - 2) + 1;
+    int start_y = prandom_u32() % (MAZE_HEIGHT - 2) + 1;
+
+    // Start carving paths
+    carve_path(maze, start_x, start_y);
+
+    // Create entrance and exit
+    maze[start_y * (MAZE_WIDTH + 1)] = ' '; // Entrance at the first row
+    maze[(MAZE_HEIGHT - 2) * (MAZE_WIDTH + 1) + (MAZE_WIDTH - 2)] = ' '; // Exit near the bottom right
+
+    // Copy the maze to the user buffer
+    len = simple_read_from_buffer(buf, count, pos, maze, MAZE_WIDTH * MAZE_HEIGHT + MAZE_HEIGHT);
 
     kfree(maze); // Free the memory
     return len;
@@ -182,7 +113,7 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
 /* Struct for file operations */
 static const struct file_operations ethan_proc_ops = {
     .owner = THIS_MODULE,
-    .read = ethan_read, // custom read
+    .read = ethan_read, // Custom read
 };
 
 /* Macros */
