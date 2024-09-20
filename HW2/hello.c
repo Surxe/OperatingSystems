@@ -6,11 +6,8 @@
 #include <linux/random.h> // For prandom_u32
 #include <linux/timekeeping.h> // For ktime_get_real_ts64()
 #include <linux/fs.h> // For file_operations
-#include <linux/list.h> // For linked list
 
 #define PROC_NAME "ethan_maze"
-#define MAZE_WIDTH 30
-#define MAZE_HEIGHT 20
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("A simple module that generates an ASCII maze in the proc file system");
@@ -18,14 +15,6 @@ MODULE_AUTHOR("Ethan E");
 
 /* Forward declaration of the file operations structure */
 static const struct file_operations ethan_proc_ops;
-
-struct cell {
-    int x;
-    int y;
-    struct list_head list;
-};
-
-static struct list_head walls;
 
 /*
 Name: Ethan E
@@ -51,110 +40,46 @@ static void __exit ethan_exit(void) {
 /*
 Name: Ethan E
 Date: 9/19/24
-Description: Count the number of elements in a linked list
-*/
-static int list_count(struct list_head *head) {
-    struct list_head *pos;
-    int count = 0;
-
-    list_for_each(pos, head) {
-        count++;
-    }
-    return count;
-}
-
-/*
-Name: Ethan E
-Date: 9/19/24
 Description: Custom read function that outputs a generated ASCII maze
 */
 static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, loff_t *pos) {
     struct timespec64 ts;
+    int maze_width = 30;
+    int maze_height = 20;
     char *maze;
-    int i, j, random_index, wall_count;
+    int i, j;
     ssize_t len; 
 
     if (*pos > 0) return 0; // Prevent reading it many times
 
-    // Allocate memory for the maze
-    maze = kmalloc((MAZE_WIDTH * MAZE_HEIGHT) + MAZE_HEIGHT + 1, GFP_KERNEL); // Extra space for newlines and null terminator
+    // Allocate memory
+    maze = kmalloc((maze_width * maze_height) + maze_height + 1, GFP_KERNEL); // Extra space for newlines and null terminator
     if (!maze) return -ENOMEM;
 
     // Seed
     ktime_get_real_ts64(&ts);
     prandom_seed(ts.tv_nsec);
 
-    // Initialize the maze with walls
-    for (i = 0; i < MAZE_HEIGHT; i++) {
-        for (j = 0; j < MAZE_WIDTH; j++) {
-            maze[i * (MAZE_WIDTH + 1) + j] = '#'; // Set walls
+    // Initialize the maze's walls and walkways
+    for (i = 0; i < maze_height; i++) {
+        for (j = 0; j < maze_width; j++) {
+            maze[i * (maze_width + 1) + j] = '#'; // Set walls
         }
-        maze[i * (MAZE_WIDTH + 1) + MAZE_WIDTH] = '\n'; // Add newline at end of each row
+        maze[i * (maze_width + 1) + maze_width] = '\n'; // Add newline at end of each row
     }
 
-    // Set entrance (1, 1) and exit (MAZE_HEIGHT-2, MAZE_WIDTH-2) as walkways
-    maze[1 * (MAZE_WIDTH + 1) + 1] = ' ';
-    maze[(MAZE_HEIGHT - 2) * (MAZE_WIDTH + 1) + (MAZE_WIDTH - 2)] = ' ';
+    // Set starting position (1,1) as a walkway, and ensure it's not enclosed
+    maze[1 * (maze_width + 1) + 1] = ' '; // Starting location
+    maze[0 * (maze_width + 1) + 1] = ' '; // Remove wall above entrance
 
-    // Initialize walls list for Prim's algorithm
-    INIT_LIST_HEAD(&walls);
+    // Set ending position (maze_height-2, maze_width-2) as a walkway
+    maze[(maze_height - 2) * (maze_width + 1) + (maze_width - 2)] = ' '; // Ending location
+    maze[(maze_height - 1) * (maze_width + 1) + (maze_width - 2)] = ' '; // Remove wall below exit
 
-    // Add initial walls adjacent to the entrance
-    maze[0 * (MAZE_WIDTH + 1) + 1] = ' '; // Open entrance above
-    maze[1 * (MAZE_WIDTH + 1) + 0] = ' '; // Open left of entrance
-    maze[1 * (MAZE_WIDTH + 1) + 2] = ' '; // Open right of entrance
-
-    // Add the walls to the list
-    list_add(&((struct cell) {1, 0, LIST_HEAD_INIT(walls)}).list, &walls); // left of entrance
-    list_add(&((struct cell) {1, 2, LIST_HEAD_INIT(walls)}).list, &walls); // right of entrance
-    list_add(&((struct cell) {0, 1, LIST_HEAD_INIT(walls)}).list, &walls); // above entrance
-
-    // Prim's algorithm to carve paths
-    while (!list_empty(&walls)) {
-        struct cell *current_wall;
-        struct list_head *pos;
-
-        // Count the walls in the list
-        wall_count = list_count(&walls);
-        // Pick a random wall from the list
-        random_index = prandom_u32() % wall_count;
-        pos = walls.next;
-        for (i = 0; i < random_index; i++) {
-            pos = pos->next;
-        }
-
-        current_wall = list_entry(pos, struct cell, list);
-
-        // Check if it can be a walkway
-        if (current_wall->x > 0 && current_wall->x < MAZE_HEIGHT - 1 &&
-            current_wall->y > 0 && current_wall->y < MAZE_WIDTH - 1) {
-            if (maze[(current_wall->x - 1) * (MAZE_WIDTH + 1) + current_wall->y] == ' ' &&
-                maze[(current_wall->x + 1) * (MAZE_WIDTH + 1) + current_wall->y] == '#') {
-                maze[current_wall->x * (MAZE_WIDTH + 1) + current_wall->y] = ' ';
-                // Add new walls
-                if (current_wall->x > 1) {
-                    list_add(&((struct cell) {current_wall->x - 1, current_wall->y, LIST_HEAD_INIT(walls)}).list, &walls);
-                }
-                if (current_wall->x < MAZE_HEIGHT - 2) {
-                    list_add(&((struct cell) {current_wall->x + 1, current_wall->y, LIST_HEAD_INIT(walls)}).list, &walls);
-                }
-                if (current_wall->y > 1) {
-                    list_add(&((struct cell) {current_wall->x, current_wall->y - 1, LIST_HEAD_INIT(walls)}).list, &walls);
-                }
-                if (current_wall->y < MAZE_WIDTH - 2) {
-                    list_add(&((struct cell) {current_wall->x, current_wall->y + 1, LIST_HEAD_INIT(walls)}).list, &walls);
-                }
-            }
-        }
-
-        // Remove the wall from the list
-        list_del(pos);
-    }
-
-    maze[MAZE_WIDTH * MAZE_HEIGHT + MAZE_HEIGHT] = '\0'; // Null terminate the maze
+    maze[maze_width * maze_height + maze_height] = '\0'; // Null terminate the maze
 
     // Copy it to user buffer
-    len = simple_read_from_buffer(buf, count, pos, maze, MAZE_WIDTH * MAZE_HEIGHT + MAZE_HEIGHT);
+    len = simple_read_from_buffer(buf, count, pos, maze, maze_width * maze_height + maze_height);
 
     kfree(maze); // Free the memory
     return len;
