@@ -47,7 +47,7 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
     int maze_width = 30;
     int maze_height = 20;
     char *maze;
-    int i, j, random_val;
+    int i, j;
     ssize_t len; 
 
     if (*pos > 0) return 0; // Prevent reading it many times
@@ -67,6 +67,13 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
         }
         maze[i * (maze_width + 1) + maze_width] = '\n'; // Add newline at end of each row
     }
+
+    // Set starting position (1,1) as a walkway
+    maze[1 * (maze_width + 1) + 1] = ' '; // Starting location
+
+    // Set ending position (maze_height-2, maze_width-2) as a walkway
+    maze[(maze_height - 2) * (maze_width + 1) + (maze_width - 2)] = ' '; // Ending location
+
     maze[maze_width * maze_height + maze_height] = '\0'; // Null terminate the maze
 
     // Copy it to user buffer
