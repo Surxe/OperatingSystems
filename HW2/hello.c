@@ -65,8 +65,9 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
     prandom_seed(ts.tv_nsec);
 
     // Initialize the maze's walls and walkways
-    for (int i = 0; i < maze_height; i++) {
-        for (int j = 0; j < maze_width; j++) {
+    int i, j; // Declare loop variables here
+    for (i = 0; i < maze_height; i++) {
+        for (j = 0; j < maze_width; j++) {
             maze[i * (maze_width + 1) + j] = WALL; // Set walls
         }
         maze[i * (maze_width + 1) + maze_width] = '\n'; // Add newline at end of each row
@@ -98,16 +99,15 @@ Date: 9/19/24
 Description: Connects the entrance and exit using Prim's algorithm
 */
 static void prims_algorithm(char *maze, int maze_width, int maze_height, int start_x, int start_y) {
-    // This is a simple version of Prim's algorithm to create a path.
     int x = start_x, y = start_y;
     int directions[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // Right, Down, Left, Up
     int path_length = 0;
 
     // Create a stack for walls
     bool **in_mst = kmalloc(maze_height * sizeof(bool *), GFP_KERNEL);
-    for (int i = 0; i < maze_height; i++) {
+    for (i = 0; i < maze_height; i++) {
         in_mst[i] = kmalloc(maze_width * sizeof(bool), GFP_KERNEL);
-        for (int j = 0; j < maze_width; j++) {
+        for (j = 0; j < maze_width; j++) {
             in_mst[i][j] = false;
         }
     }
@@ -133,7 +133,7 @@ static void prims_algorithm(char *maze, int maze_width, int maze_height, int sta
     }
 
     // Free allocated memory
-    for (int i = 0; i < maze_height; i++) {
+    for (i = 0; i < maze_height; i++) {
         kfree(in_mst[i]);
     }
     kfree(in_mst);
