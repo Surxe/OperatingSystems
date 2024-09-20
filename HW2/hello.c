@@ -53,6 +53,7 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
     int maze_height = 20;
     char *maze;
     ssize_t len; 
+    int i, j; // Declare loop variables here
 
     if (*pos > 0) return 0; // Prevent reading it many times
 
@@ -65,7 +66,6 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
     prandom_seed(ts.tv_nsec);
 
     // Initialize the maze's walls and walkways
-    int i, j; // Declare loop variables here
     for (i = 0; i < maze_height; i++) {
         for (j = 0; j < maze_width; j++) {
             maze[i * (maze_width + 1) + j] = WALL; // Set walls
@@ -102,6 +102,7 @@ static void prims_algorithm(char *maze, int maze_width, int maze_height, int sta
     int x = start_x, y = start_y;
     int directions[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // Right, Down, Left, Up
     int path_length = 0;
+    int i, j; // Declare loop variables here
 
     // Create a stack for walls
     bool **in_mst = kmalloc(maze_height * sizeof(bool *), GFP_KERNEL);
