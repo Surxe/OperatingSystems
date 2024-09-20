@@ -3,6 +3,7 @@ cmd_/home/osc/OperatingSystems/HW2/hello.mod.o := gcc -Wp,-MD,/home/osc/Operatin
 source_/home/osc/OperatingSystems/HW2/hello.mod.o := /home/osc/OperatingSystems/HW2/hello.mod.c
 
 deps_/home/osc/OperatingSystems/HW2/hello.mod.o := \
+    $(wildcard include/config/module/unload.h) \
   include/linux/module.h \
     $(wildcard include/config/modules.h) \
     $(wildcard include/config/sysfs.h) \
@@ -17,7 +18,6 @@ deps_/home/osc/OperatingSystems/HW2/hello.mod.o := \
     $(wildcard include/config/event/tracing.h) \
     $(wildcard include/config/ftrace/mcount/record.h) \
     $(wildcard include/config/livepatch.h) \
-    $(wildcard include/config/module/unload.h) \
     $(wildcard include/config/constructors.h) \
     $(wildcard include/config/debug/set/module/ronx.h) \
   include/linux/list.h \
