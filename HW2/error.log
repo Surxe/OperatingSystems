@@ -1,27 +1,15 @@
 /home/osc/OperatingSystems/HW2/hello.c: In function ‘ethan_read’:
-/home/osc/OperatingSystems/HW2/hello.c:68:5: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
-     for (int i = 0; i < maze_height; i++) {
+/home/osc/OperatingSystems/HW2/hello.c:68:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+     int i, j; // Declare loop variables here
      ^
-/home/osc/OperatingSystems/HW2/hello.c:68:5: note: use option -std=c99, -std=gnu99, -std=c11 or -std=gnu11 to compile your code
-/home/osc/OperatingSystems/HW2/hello.c:69:9: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
-         for (int j = 0; j < maze_width; j++) {
-         ^
 /home/osc/OperatingSystems/HW2/hello.c: In function ‘prims_algorithm’:
-/home/osc/OperatingSystems/HW2/hello.c:108:5: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
-     for (int i = 0; i < maze_height; i++) {
-     ^
-/home/osc/OperatingSystems/HW2/hello.c:110:9: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
-         for (int j = 0; j < maze_width; j++) {
-         ^
-/home/osc/OperatingSystems/HW2/hello.c:136:14: error: redefinition of ‘i’
-     for (int i = 0; i < maze_height; i++) {
+/home/osc/OperatingSystems/HW2/hello.c:108:10: error: ‘i’ undeclared (first use in this function)
+     for (i = 0; i < maze_height; i++) {
+          ^
+/home/osc/OperatingSystems/HW2/hello.c:108:10: note: each undeclared identifier is reported only once for each function it appears in
+/home/osc/OperatingSystems/HW2/hello.c:110:14: error: ‘j’ undeclared (first use in this function)
+         for (j = 0; j < maze_width; j++) {
               ^
-/home/osc/OperatingSystems/HW2/hello.c:108:14: note: previous definition of ‘i’ was here
-     for (int i = 0; i < maze_height; i++) {
-              ^
-/home/osc/OperatingSystems/HW2/hello.c:136:5: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
-     for (int i = 0; i < maze_height; i++) {
-     ^
 make[2]: *** [/home/osc/OperatingSystems/HW2/hello.o] Error 1
 make[1]: *** [_module_/home/osc/OperatingSystems/HW2] Error 2
 make: *** [all] Error 2
