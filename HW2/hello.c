@@ -8,9 +8,11 @@
 #include <linux/fs.h> // For file_operations
 
 #define PROC_NAME "ethan_maze"
+#define MAZE_WIDTH 30
+#define MAZE_HEIGHT 20
 
 MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("A simple module that generates an ASCII maze in the proc file system using the Hunt and Kill algorithm");
+MODULE_DESCRIPTION("A simple module that generates an ASCII maze in the proc file system");
 MODULE_AUTHOR("Ethan E");
 
 /* Forward declaration of the file operations structure */
@@ -37,86 +39,111 @@ static void __exit ethan_exit(void) {
     printk(KERN_INFO "Ethan's module has been unloaded.\n");
 }
 
-/* Maze dimensions */
-#define MAZE_WIDTH 30
-#define MAZE_HEIGHT 20
-
-/* Maze generation functions */
-static void init_maze(char *maze) {
-    int i, j;
-    for (i = 0; i < MAZE_HEIGHT; i++) {
-        for (j = 0; j < MAZE_WIDTH; j++) {
-            maze[i * (MAZE_WIDTH + 1) + j] = '#'; // Fill the maze with walls
-        }
-        maze[i * (MAZE_WIDTH + 1) + MAZE_WIDTH] = '\n'; // Newline at end of each row
-    }
-    maze[MAZE_WIDTH * MAZE_HEIGHT + MAZE_HEIGHT] = '\0'; // Null terminate the maze
-}
-
-static void carve_path(char *maze, int x, int y) {
-    maze[y * (MAZE_WIDTH + 1) + x] = ' '; // Carve the path
-
-    int directions[4][2] = { {1, 0}, {0, 1}, {-1, 0}, {0, -1} }; // Right, Down, Left, Up
-    int dir, nx, ny;
-    int i;
-
-    for (i = 0; i < 4; i++) {
-        dir = prandom_u32() % 4; // Randomize the order of directions
-        nx = x + directions[dir][0];
-        ny = y + directions[dir][1];
-
-        if (nx > 0 && nx < MAZE_WIDTH && ny > 0 && ny < MAZE_HEIGHT && maze[ny * (MAZE_WIDTH + 1) + nx] == '#') {
-            carve_path(maze, nx, ny);
-        }
-    }
-}
-
 /*
 Name: Ethan E
 Date: 9/19/24
-Description: Custom read function that outputs a generated ASCII maze using the Hunt and Kill algorithm.
+Description: Custom read function that outputs a generated ASCII maze
 */
 static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, loff_t *pos) {
-    struct timespec64 ts;
     char *maze;
-    ssize_t len;
-    int start_x, start_y;
+    ssize_t len; 
 
     if (*pos > 0) return 0; // Prevent reading it multiple times
 
-    // Allocate memory
+    // Allocate memory for the maze
     maze = kmalloc((MAZE_WIDTH * MAZE_HEIGHT) + MAZE_HEIGHT + 1, GFP_KERNEL); // Extra space for newlines and null terminator
     if (!maze) return -ENOMEM;
 
-    // Seed
-    ktime_get_real_ts64(&ts);
-    prandom_seed(ts.tv_nsec);
+    // Generate the maze
+    generate_hunt_and_kill_maze(maze);
 
-    // Initialize the maze with walls
-    init_maze(maze);
-
-    // Random starting point
-    start_x = prandom_u32() % (MAZE_WIDTH - 2) + 1;
-    start_y = prandom_u32() % (MAZE_HEIGHT - 2) + 1;
-
-    // Start carving paths
-    carve_path(maze, start_x, start_y);
-
-    // Create entrance and exit
-    maze[start_y * (MAZE_WIDTH + 1)] = ' '; // Entrance at the first row
-    maze[(MAZE_HEIGHT - 2) * (MAZE_WIDTH + 1) + (MAZE_WIDTH - 2)] = ' '; // Exit near the bottom right
-
-    // Copy the maze to the user buffer
+    // Copy it to user buffer
     len = simple_read_from_buffer(buf, count, pos, maze, MAZE_WIDTH * MAZE_HEIGHT + MAZE_HEIGHT);
 
     kfree(maze); // Free the memory
     return len;
 }
 
+/*
+Name: Ethan E
+Date: 9/19/24
+Description: Generates the maze using the Hunt and Kill algorithm
+*/
+static void generate_hunt_and_kill_maze(char *maze) {
+    int x, y, i, j;
+    int visited[MAZE_HEIGHT][MAZE_WIDTH] = {0};
+    int walls[MAZE_HEIGHT][MAZE_WIDTH] = {0};
+    
+    // Initialize the maze with walls
+    for (i = 0; i < MAZE_HEIGHT; i++) {
+        for (j = 0; j < MAZE_WIDTH; j++) {
+            maze[i * (MAZE_WIDTH + 1) + j] = '#'; // Fill with walls
+            walls[i][j] = 1; // All walls initially
+        }
+    }
+
+    // Start point
+    x = 1; 
+    y = 1;
+    maze[y * (MAZE_WIDTH + 1) + x] = ' '; // Create entrance
+    visited[y][x] = 1; // Mark as visited
+    walls[y][x] = 0;
+
+    // Main loop for maze generation
+    while (1) {
+        // Randomly pick a direction
+        int found = 0;
+        int direction[4][2] = {{0, 2}, {2, 0}, {0, -2}, {-2, 0}};
+        for (i = 0; i < 4; i++) {
+            int dir = prandom_u32() % 4;
+            int nx = x + direction[dir][0];
+            int ny = y + direction[dir][1];
+            if (nx > 0 && nx < MAZE_WIDTH - 1 && ny > 0 && ny < MAZE_HEIGHT - 1 && !visited[ny][nx]) {
+                maze[y * (MAZE_WIDTH + 1) + x + direction[dir][0] / 2] = ' '; // Remove wall
+                maze[ny * (MAZE_WIDTH + 1) + nx] = ' '; // Create path
+                visited[ny][nx] = 1; // Mark as visited
+                x = nx;
+                y = ny;
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found) {
+            // Hunt for unvisited cells
+            int hunted = 0;
+            for (i = 1; i < MAZE_HEIGHT - 1; i++) {
+                for (j = 1; j < MAZE_WIDTH - 1; j++) {
+                    if (!visited[i][j]) {
+                        // Check if it can connect to a visited cell
+                        if (visited[i-1][j] || visited[i+1][j] || visited[i][j-1] || visited[i][j+1]) {
+                            // Move to this cell
+                            x = j;
+                            y = i;
+                            maze[y * (MAZE_WIDTH + 1) + x] = ' '; // Create path
+                            visited[y][x] = 1; // Mark as visited
+                            hunted = 1;
+                            break;
+                        }
+                    }
+                }
+                if (hunted) break;
+            }
+            if (!hunted) break; // Exit if no more cells to hunt
+        }
+    }
+
+    // Create exit
+    maze[(MAZE_HEIGHT - 2) * (MAZE_WIDTH + 1) + (MAZE_WIDTH - 2)] = ' '; // Exit point
+
+    // Null terminate the maze
+    maze[MAZE_WIDTH * MAZE_HEIGHT + MAZE_HEIGHT] = '\0'; // Null terminate
+}
+
 /* Struct for file operations */
 static const struct file_operations ethan_proc_ops = {
     .owner = THIS_MODULE,
-    .read = ethan_read, // Custom read
+    .read = ethan_read, // custom read
 };
 
 /* Macros */
