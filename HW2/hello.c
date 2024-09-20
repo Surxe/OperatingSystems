@@ -6,11 +6,12 @@
 #include <linux/random.h> // For prandom_u32
 #include <linux/timekeeping.h> // For ktime_get_real_ts64()
 #include <linux/fs.h> // For file_operations
+#include <linux/bitmap.h> // For bitmap operations
 
 #define PROC_NAME "ethan_maze"
 
 MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("A simple module that generates an ASCII maze in the proc file system");
+MODULE_DESCRIPTION("A kernel module that generates an ASCII maze in the proc file system using Prim's algorithm");
 MODULE_AUTHOR("Ethan E");
 
 /* Forward declaration of the file operations structure */
@@ -18,7 +19,7 @@ static const struct file_operations ethan_proc_ops;
 
 /*
 Name: Ethan E
-Date: 9/18/24
+Date: 9/19/24
 Description: Custom initialization function
 */
 static int __init ethan_init(void) {
@@ -29,7 +30,7 @@ static int __init ethan_init(void) {
 
 /*
 Name: Ethan E
-Date: 9/18/24
+Date: 9/19/24
 Description: Custom cleanup function for the kernel module.
 */
 static void __exit ethan_exit(void) {
@@ -37,18 +38,22 @@ static void __exit ethan_exit(void) {
     printk(KERN_INFO "Ethan's module has been unloaded.\n");
 }
 
+/* Function prototypes */
+static void generate_maze(char *maze, int width, int height);
+static void prim_algorithm(char *maze, int width, int height);
+static void add_entrance_and_exit(char *maze, int width, int height);
+
 /*
 Name: Ethan E
-Date: 9/18/24
-Description: Custom read function that outputs a generated ASCII maze
+Date: 9/19/24
+Description: Generates a maze using Prim's algorithm and adds entrance/exit.
 */
 static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, loff_t *pos) {
     struct timespec64 ts;
     int maze_width = 30;
     int maze_height = 20;
     char *maze;
-    int i, j, random_val, x, y;
-    ssize_t len;
+    ssize_t len; 
 
     if (*pos > 0) return 0; // Prevent reading it many times
 
@@ -60,64 +65,148 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
     ktime_get_real_ts64(&ts);
     prandom_seed(ts.tv_nsec);
 
-    // Initialize the maze with walls
-    for (i = 0; i < maze_height; i++) {
-        for (j = 0; j < maze_width; j++) {
-            maze[i * (maze_width + 1) + j] = '#'; // All walls
-        }
-        maze[i * (maze_width + 1) + maze_width] = '\n'; // Add newline at end of each row
-    }
-    maze[maze_width * maze_height + maze_height] = '\0'; // Null terminate the maze
-
-    // Prim's algorithm initialization
-    int *walls = kmalloc(maze_width * maze_height * sizeof(int), GFP_KERNEL);
-    int wall_count = 0;
-
-    // Start point
-    x = prandom_u32() % (maze_width / 2) * 2 + 1; // Ensure it's odd to avoid boundaries
-    y = prandom_u32() % (maze_height / 2) * 2 + 1; // Ensure it's odd to avoid boundaries
-
-    maze[y * (maze_width + 1) + x] = ' '; // Start point
-    walls[wall_count++] = y * maze_width + x;
-
-    while (wall_count > 0) {
-        // Choose a random wall
-        int wall_index = prandom_u32() % wall_count;
-        int wall = walls[wall_index];
-        int wx = wall % maze_width;
-        int wy = wall / maze_width;
-
-        // Remove the wall from the list
-        walls[wall_index] = walls[--wall_count];
-
-        // Check if it's a valid wall
-        int cx, cy, count = 0;
-        if (wx > 1 && maze[(wy) * (maze_width + 1) + wx - 2] == ' ') { cx = wx - 2; cy = wy; count++; }
-        if (wx < maze_width - 2 && maze[(wy) * (maze_width + 1) + wx + 2] == ' ') { cx = wx + 2; cy = wy; count++; }
-        if (wy > 1 && maze[(wy - 2) * (maze_width + 1) + wx] == ' ') { cx = wx; cy = wy - 2; count++; }
-        if (wy < maze_height - 2 && maze[(wy + 2) * (maze_width + 1) + wx] == ' ') { cx = wx; cy = wy + 2; count++; }
-
-        if (count == 1) { // It is a valid wall
-            maze[wy * (maze_width + 1) + wx] = ' '; // Break the wall
-
-            // Add new walls
-            if (wx > 1 && maze[(wy) * (maze_width + 1) + wx - 2] == '#') walls[wall_count++] = wy * maze_width + (wx - 2);
-            if (wx < maze_width - 2 && maze[(wy) * (maze_width + 1) + wx + 2] == '#') walls[wall_count++] = wy * maze_width + (wx + 2);
-            if (wy > 1 && maze[(wy - 2) * (maze_width + 1) + wx] == '#') walls[wall_count++] = (wy - 2) * maze_width + wx;
-            if (wy < maze_height - 2 && maze[(wy + 2) * (maze_width + 1) + wx] == '#') walls[wall_count++] = (wy + 2) * maze_width + wx;
-        }
-    }
-
-    // Add entrance and exit
-    maze[0 * (maze_width + 1) + 1] = ' '; // Entrance
-    maze[(maze_height - 1) * (maze_width + 1) + maze_width - 2] = ' '; // Exit
+    // Generate the maze
+    generate_maze(maze, maze_width, maze_height);
 
     // Copy it to user buffer
     len = simple_read_from_buffer(buf, count, pos, maze, maze_width * maze_height + maze_height);
 
-    kfree(walls); // Free the walls memory
-    kfree(maze); // Free the maze memory
+    kfree(maze); // Free the memory
     return len;
+}
+
+/*
+Name: Ethan E
+Date: 9/19/24
+Description: Generates the maze using Prim's algorithm.
+*/
+static void generate_maze(char *maze, int width, int height) {
+    int i, j;
+    int num_cells = width * height;
+    bool *visited = kmalloc(num_cells * sizeof(bool), GFP_KERNEL);
+    struct timespec64 ts;
+
+    if (!visited) return;
+
+    memset(visited, 0, num_cells * sizeof(bool));
+    ktime_get_real_ts64(&ts);
+    prandom_seed(ts.tv_nsec);
+
+    // Initialize the maze with walls
+    memset(maze, '#', width * height);
+
+    prim_algorithm(maze, width, height);
+
+    add_entrance_and_exit(maze, width, height);
+
+    // Set newlines and null terminator
+    for (i = 0; i < height; i++) {
+        maze[i * (width + 1) + width] = '\n';
+    }
+    maze[width * height + height] = '\0';
+
+    kfree(visited);
+}
+
+/*
+Name: Ethan E
+Date: 9/19/24
+Description: Implements Prim's algorithm for maze generation.
+*/
+static void prim_algorithm(char *maze, int width, int height) {
+    int x, y, nx, ny;
+    int dx[] = {1, 0, -1, 0};
+    int dy[] = {0, 1, 0, -1};
+    int num_cells = width * height;
+    bool *visited = kmalloc(num_cells * sizeof(bool), GFP_KERNEL);
+    struct timespec64 ts;
+    int *walls;
+    int num_walls;
+    int i;
+
+    if (!visited) return;
+
+    memset(visited, 0, num_cells * sizeof(bool));
+    ktime_get_real_ts64(&ts);
+    prandom_seed(ts.tv_nsec);
+
+    // Choose a starting point
+    x = prandom_u32() % width;
+    y = prandom_u32() % height;
+    visited[y * width + x] = true;
+    
+    num_walls = 0;
+    walls = kmalloc(num_cells * sizeof(int), GFP_KERNEL);
+
+    if (!walls) {
+        kfree(visited);
+        return;
+    }
+
+    // Add initial walls
+    for (i = 0; i < 4; i++) {
+        nx = x + dx[i] * 2;
+        ny = y + dy[i] * 2;
+        if (nx > 0 && ny > 0 && nx < width - 1 && ny < height - 1) {
+            walls[num_walls++] = ny * width + nx;
+        }
+    }
+
+    // Run Prim's algorithm
+    while (num_walls > 0) {
+        int wall_idx = prandom_u32() % num_walls;
+        int wall = walls[wall_idx];
+        nx = wall % width;
+        ny = wall / width;
+        int removed = false;
+
+        for (i = 0; i < 4; i++) {
+            int nx2 = nx + dx[i];
+            int ny2 = ny + dy[i];
+            if (nx2 >= 0 && ny2 >= 0 && nx2 < width && ny2 < height) {
+                if (visited[ny2 * width + nx2]) {
+                    maze[ny * width + nx] = ' ';
+                    visited[ny * width + nx] = true;
+                    removed = true;
+                    break;
+                }
+            }
+        }
+
+        // Remove wall from list
+        if (removed) {
+            walls[wall_idx] = walls[--num_walls];
+        } else {
+            num_walls--;
+        }
+
+        // Add new walls
+        for (i = 0; i < 4; i++) {
+            nx = nx + dx[i] * 2;
+            ny = ny + dy[i] * 2;
+            if (nx >= 0 && ny >= 0 && nx < width && ny < height) {
+                if (!visited[ny * width + nx]) {
+                    walls[num_walls++] = ny * width + nx;
+                }
+            }
+        }
+    }
+
+    kfree(walls);
+    kfree(visited);
+}
+
+/*
+Name: Ethan E
+Date: 9/19/24
+Description: Adds entrance and exit to the maze.
+*/
+static void add_entrance_and_exit(char *maze, int width, int height) {
+    int entrance_x = prandom_u32() % width;
+    int exit_x = prandom_u32() % width;
+
+    maze[0 * width + entrance_x] = ' ';
+    maze[(height - 1) * width + exit_x] = ' ';
 }
 
 /* Struct for file operations */
