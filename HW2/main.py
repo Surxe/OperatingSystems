@@ -1,27 +1,28 @@
 import subprocess
 
-def run_command(command):
-	"""Run a shell command and return output"""
-	try:
-		result = subprocess.run(command, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		return result.stdout
-	except subprocess.CalledProcessError as e:
-		print("Error:", e.stderr)
-	return None
+def run_command(command, message):
+    """Run a shell command and return the output, with a status message."""
+    print(message)
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+
+    if process.returncode != 0:
+        print(f"Error: {stderr.decode('utf-8', errors='replace').strip()}")
+        return None
+    return stdout.decode('utf-8', errors='replace').strip()
 
 def main():
-	commands = ["make 2>error.log", 
-		    "sudo insmod hello.ko",
-		    "cat /proc/ethan_maze", 
-		    "sudo rmmod hello"]
+    # Define the commands and their associated messages
+    commands = [
+        {"cmd": "sudo insmod hello.ko", "msg": "Inserting the kernel module..."},
+        {"cmd": "cat /proc/ethan_maze", "msg": "Reading the maze from /proc/ethan_maze..."},
+        {"cmd": "sudo rmmod hello", "msg": "Removing the kernel module..."}
+    ]
 
-	# Run each command
-	for command in commands:
-		output = run_command(command)
-		if output is None:
-			print("Failed to run command",command)
-		else:
-			print(output)
+    for command in commands:
+        output = run_command(command["cmd"], command["msg"])
+        if command["cmd"] == "cat /proc/ethan_maze" and output:
+            print(output)  # Print the maze output
 
 if __name__ == "__main__":
-	main()
+    main()
