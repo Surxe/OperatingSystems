@@ -1,7 +1,4 @@
 /home/osc/OperatingSystems/HW2/hello.c: In function ‘generate_maze’:
-/home/osc/OperatingSystems/HW2/hello.c:76:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+/home/osc/OperatingSystems/HW2/hello.c:80:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
          struct Cell selectedCell = cells[randIndex];
          ^
-/home/osc/OperatingSystems/HW2/hello.c:102:1: warning: the frame size of 7208 bytes is larger than 1024 bytes [-Wframe-larger-than=]
- }
- ^
