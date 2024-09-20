@@ -7,7 +7,7 @@ def run_command(command, message):
     stdout, stderr = process.communicate()
 
     if process.returncode != 0:
-        print(f"Error: ",stderr.decode('utf-8', errors='replace').strip()})
+        print("Error: ",stderr.decode('utf-8', errors='replace').strip()})
         return None
     return stdout.decode('utf-8', errors='replace').strip()
 
