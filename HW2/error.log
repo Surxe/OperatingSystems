@@ -1,8 +1,0 @@
-/home/osc/OperatingSystems/HW2/hello.c: In function ‘ethan_read’:
-/home/osc/OperatingSystems/HW2/hello.c:103:45: error: implicit declaration of function ‘list_size’ [-Werror=implicit-function-declaration]
-         random_index = prandom_u32() % (int)list_size(&walls);
-                                             ^
-cc1: some warnings being treated as errors
-make[2]: *** [/home/osc/OperatingSystems/HW2/hello.o] Error 1
-make[1]: *** [_module_/home/osc/OperatingSystems/HW2] Error 2
-make: *** [all] Error 2
