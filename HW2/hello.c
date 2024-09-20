@@ -43,8 +43,9 @@ static void __exit ethan_exit(void) {
 
 /* Maze generation functions */
 static void init_maze(char *maze) {
-    for (int i = 0; i < MAZE_HEIGHT; i++) {
-        for (int j = 0; j < MAZE_WIDTH; j++) {
+    int i, j;
+    for (i = 0; i < MAZE_HEIGHT; i++) {
+        for (j = 0; j < MAZE_WIDTH; j++) {
             maze[i * (MAZE_WIDTH + 1) + j] = '#'; // Fill the maze with walls
         }
         maze[i * (MAZE_WIDTH + 1) + MAZE_WIDTH] = '\n'; // Newline at end of each row
@@ -57,8 +58,9 @@ static void carve_path(char *maze, int x, int y) {
 
     int directions[4][2] = { {1, 0}, {0, 1}, {-1, 0}, {0, -1} }; // Right, Down, Left, Up
     int dir, nx, ny;
+    int i;
 
-    for (int i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++) {
         dir = prandom_u32() % 4; // Randomize the order of directions
         nx = x + directions[dir][0];
         ny = y + directions[dir][1];
@@ -78,6 +80,7 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
     struct timespec64 ts;
     char *maze;
     ssize_t len;
+    int start_x, start_y;
 
     if (*pos > 0) return 0; // Prevent reading it multiple times
 
@@ -93,8 +96,8 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
     init_maze(maze);
 
     // Random starting point
-    int start_x = prandom_u32() % (MAZE_WIDTH - 2) + 1;
-    int start_y = prandom_u32() % (MAZE_HEIGHT - 2) + 1;
+    start_x = prandom_u32() % (MAZE_WIDTH - 2) + 1;
+    start_y = prandom_u32() % (MAZE_HEIGHT - 2) + 1;
 
     // Start carving paths
     carve_path(maze, start_x, start_y);
