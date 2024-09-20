@@ -1,15 +1,8 @@
 /home/osc/OperatingSystems/HW2/hello.c: In function ‘ethan_read’:
-/home/osc/OperatingSystems/HW2/hello.c:68:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-     int i, j; // Declare loop variables here
-     ^
-/home/osc/OperatingSystems/HW2/hello.c: In function ‘prims_algorithm’:
-/home/osc/OperatingSystems/HW2/hello.c:108:10: error: ‘i’ undeclared (first use in this function)
-     for (i = 0; i < maze_height; i++) {
-          ^
-/home/osc/OperatingSystems/HW2/hello.c:108:10: note: each undeclared identifier is reported only once for each function it appears in
-/home/osc/OperatingSystems/HW2/hello.c:110:14: error: ‘j’ undeclared (first use in this function)
-         for (j = 0; j < maze_width; j++) {
-              ^
+/home/osc/OperatingSystems/HW2/hello.c:103:45: error: implicit declaration of function ‘list_size’ [-Werror=implicit-function-declaration]
+         random_index = prandom_u32() % (int)list_size(&walls);
+                                             ^
+cc1: some warnings being treated as errors
 make[2]: *** [/home/osc/OperatingSystems/HW2/hello.o] Error 1
 make[1]: *** [_module_/home/osc/OperatingSystems/HW2] Error 2
 make: *** [all] Error 2
