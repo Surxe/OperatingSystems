@@ -14,6 +14,7 @@ def run_command(command, message):
 def main():
     # Define the commands and their associated messages
     commands = [
+	{"cmd": "make", "msg": "Compiling the Makefile..."},
         {"cmd": "sudo insmod hello.ko", "msg": "Inserting the kernel module..."},
         {"cmd": "cat /proc/ethan_maze", "msg": "Reading the maze from /proc/ethan_maze..."},
         {"cmd": "sudo rmmod hello", "msg": "Removing the kernel module..."}
