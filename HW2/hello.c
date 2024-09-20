@@ -72,7 +72,7 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
     maze[0 * (maze_width + 1) + 1] = ' '; // Entrance
 
     // Set ending position (maze_height-2, maze_width-2) as a walkway
-    maze[(maze_height - 2) * (maze_width + 1) + (maze_width - 2)] = ' '; // Ending location
+    maze[(maze_height - 1) * (maze_width + 1) + (maze_width - 2)] = ' '; // Ending location
 
     maze[maze_width * maze_height + maze_height] = '\0'; // Null terminate the maze
 
