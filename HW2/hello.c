@@ -8,8 +8,6 @@
 #include <linux/fs.h> // For file_operations
 
 #define PROC_NAME "ethan_maze"
-#define MAZE_WIDTH 30
-#define MAZE_HEIGHT 20
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("A simple module that generates an ASCII maze in the proc file system");
@@ -45,99 +43,37 @@ Date: 9/19/24
 Description: Custom read function that outputs a generated ASCII maze
 */
 static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, loff_t *pos) {
+    struct timespec64 ts;
+    int maze_width = 30;
+    int maze_height = 20;
     char *maze;
+    int i, j, random_val;
     ssize_t len; 
 
-    if (*pos > 0) return 0; // Prevent reading it multiple times
+    if (*pos > 0) return 0; // Prevent reading it many times
 
-    // Allocate memory for the maze
-    maze = kmalloc((MAZE_WIDTH * MAZE_HEIGHT) + MAZE_HEIGHT + 1, GFP_KERNEL); // Extra space for newlines and null terminator
+    // Allocate memory
+    maze = kmalloc((maze_width * maze_height) + maze_height + 1, GFP_KERNEL); // Extra space for newlines and null terminator
     if (!maze) return -ENOMEM;
 
-    // Generate the maze
-    generate_hunt_and_kill_maze(maze);
+    // Seed
+    ktime_get_real_ts64(&ts);
+    prandom_seed(ts.tv_nsec);
+
+    // Initialize the maze's walls and walkways
+    for (i = 0; i < maze_height; i++) {
+        for (j = 0; j < maze_width; j++) {
+            maze[i * (maze_width + 1) + j] = '#'; // Set walls
+        }
+        maze[i * (maze_width + 1) + maze_width] = '\n'; // Add newline at end of each row
+    }
+    maze[maze_width * maze_height + maze_height] = '\0'; // Null terminate the maze
 
     // Copy it to user buffer
-    len = simple_read_from_buffer(buf, count, pos, maze, MAZE_WIDTH * MAZE_HEIGHT + MAZE_HEIGHT);
+    len = simple_read_from_buffer(buf, count, pos, maze, maze_width * maze_height + maze_height);
 
     kfree(maze); // Free the memory
     return len;
-}
-
-/*
-Name: Ethan E
-Date: 9/19/24
-Description: Generates the maze using the Hunt and Kill algorithm
-*/
-static void generate_hunt_and_kill_maze(char *maze) {
-    int x, y, i, j;
-    int visited[MAZE_HEIGHT][MAZE_WIDTH] = {0};
-    int walls[MAZE_HEIGHT][MAZE_WIDTH] = {0};
-    
-    // Initialize the maze with walls
-    for (i = 0; i < MAZE_HEIGHT; i++) {
-        for (j = 0; j < MAZE_WIDTH; j++) {
-            maze[i * (MAZE_WIDTH + 1) + j] = '#'; // Fill with walls
-            walls[i][j] = 1; // All walls initially
-        }
-    }
-
-    // Start point
-    x = 1; 
-    y = 1;
-    maze[y * (MAZE_WIDTH + 1) + x] = ' '; // Create entrance
-    visited[y][x] = 1; // Mark as visited
-    walls[y][x] = 0;
-
-    // Main loop for maze generation
-    while (1) {
-        // Randomly pick a direction
-        int found = 0;
-        int direction[4][2] = {{0, 2}, {2, 0}, {0, -2}, {-2, 0}};
-        for (i = 0; i < 4; i++) {
-            int dir = prandom_u32() % 4;
-            int nx = x + direction[dir][0];
-            int ny = y + direction[dir][1];
-            if (nx > 0 && nx < MAZE_WIDTH - 1 && ny > 0 && ny < MAZE_HEIGHT - 1 && !visited[ny][nx]) {
-                maze[y * (MAZE_WIDTH + 1) + x + direction[dir][0] / 2] = ' '; // Remove wall
-                maze[ny * (MAZE_WIDTH + 1) + nx] = ' '; // Create path
-                visited[ny][nx] = 1; // Mark as visited
-                x = nx;
-                y = ny;
-                found = 1;
-                break;
-            }
-        }
-
-        if (!found) {
-            // Hunt for unvisited cells
-            int hunted = 0;
-            for (i = 1; i < MAZE_HEIGHT - 1; i++) {
-                for (j = 1; j < MAZE_WIDTH - 1; j++) {
-                    if (!visited[i][j]) {
-                        // Check if it can connect to a visited cell
-                        if (visited[i-1][j] || visited[i+1][j] || visited[i][j-1] || visited[i][j+1]) {
-                            // Move to this cell
-                            x = j;
-                            y = i;
-                            maze[y * (MAZE_WIDTH + 1) + x] = ' '; // Create path
-                            visited[y][x] = 1; // Mark as visited
-                            hunted = 1;
-                            break;
-                        }
-                    }
-                }
-                if (hunted) break;
-            }
-            if (!hunted) break; // Exit if no more cells to hunt
-        }
-    }
-
-    // Create exit
-    maze[(MAZE_HEIGHT - 2) * (MAZE_WIDTH + 1) + (MAZE_WIDTH - 2)] = ' '; // Exit point
-
-    // Null terminate the maze
-    maze[MAZE_WIDTH * MAZE_HEIGHT + MAZE_HEIGHT] = '\0'; // Null terminate
 }
 
 /* Struct for file operations */
