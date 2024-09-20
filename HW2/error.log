@@ -1,0 +1,22 @@
+/home/osc/OperatingSystems/HW2/hello.c: In function ‘init_maze’:
+/home/osc/OperatingSystems/HW2/hello.c:46:5: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
+     for (int i = 0; i < MAZE_HEIGHT; i++) {
+     ^
+/home/osc/OperatingSystems/HW2/hello.c:46:5: note: use option -std=c99, -std=gnu99, -std=c11 or -std=gnu11 to compile your code
+/home/osc/OperatingSystems/HW2/hello.c:47:9: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
+         for (int j = 0; j < MAZE_WIDTH; j++) {
+         ^
+/home/osc/OperatingSystems/HW2/hello.c: In function ‘carve_path’:
+/home/osc/OperatingSystems/HW2/hello.c:58:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+     int directions[4][2] = { {1, 0}, {0, 1}, {-1, 0}, {0, -1} }; // Right, Down, Left, Up
+     ^
+/home/osc/OperatingSystems/HW2/hello.c:61:5: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
+     for (int i = 0; i < 4; i++) {
+     ^
+/home/osc/OperatingSystems/HW2/hello.c: In function ‘ethan_read’:
+/home/osc/OperatingSystems/HW2/hello.c:96:5: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+     int start_x = prandom_u32() % (MAZE_WIDTH - 2) + 1;
+     ^
+make[2]: *** [/home/osc/OperatingSystems/HW2/hello.o] Error 1
+make[1]: *** [_module_/home/osc/OperatingSystems/HW2] Error 2
+make: *** [all] Error 2
