@@ -106,7 +106,7 @@ Description: Function to generate the maze using Kruskal's algorithm.
 */
 static void generate_maze(char *maze) {
     int i, *parent;
-    
+
     // Initialize the maze with walls
     for (i = 0; i < maze_height; i++) {
         memset(maze + i * (maze_width + 1), '#', maze_width);
@@ -116,10 +116,10 @@ static void generate_maze(char *maze) {
 
     // Generate edges
     generate_edges();
-    
+
     // Initialize union-find structure
-    parent = kmalloc(sizeof(int) * edge_count, GFP_KERNEL);
-    for (i = 0; i < edge_count; i++) {
+    parent = kmalloc(sizeof(int) * (maze_width * maze_height), GFP_KERNEL);
+    for (i = 0; i < (maze_width * maze_height); i++) {
         parent[i] = i;
     }
 
@@ -135,7 +135,7 @@ static void generate_maze(char *maze) {
     for (i = 0; i < edge_count; i++) {
         int start_root = find(parent, edges[i].start.y * maze_width + edges[i].start.x);
         int end_root = find(parent, edges[i].end.y * maze_width + edges[i].end.x);
-        
+
         if (start_root != end_root) {
             union_sets(parent, start_root, end_root);
             maze[edges[i].start.y * (maze_width + 1) + edges[i].start.x] = ' ';
@@ -144,8 +144,8 @@ static void generate_maze(char *maze) {
     }
 
     // Create entrance and exit
-    maze[1 * (maze_width + 1)] = ' '; // Entrance at (0, 1)
-    maze[maze_height - 2 * (maze_width + 1) + (maze_width - 1)] = ' '; // Exit at (height-1, width-2)
+    maze[1 * (maze_width + 1)] = ' '; // Entrance at (1, 0)
+    maze[(maze_height - 2) * (maze_width + 1) + (maze_width - 1)] = ' '; // Exit at (height-2, width-1)
 
     kfree(parent);
 }
