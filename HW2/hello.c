@@ -60,7 +60,7 @@ Description: Function to generate edges for the maze.
 static void generate_edges(void) {
     int i, j;
     edge_count = 0;
-    edges = kmalloc(sizeof(struct Edge) * (maze_width * maze_height), GFP_KERNEL);
+    edges = kmalloc(sizeof(struct Edge) * (maze_width * maze_height * 2), GFP_KERNEL);
     
     for (i = 0; i < maze_height; i++) {
         for (j = 0; j < maze_width; j++) {
@@ -80,10 +80,10 @@ Date: 9/19/24
 Description: Function to find the root of a set for union-find.
 */
 static int find(int *parent, int i) {
-    if (parent[i] == i) {
-        return i;
+    if (parent[i] != i) {
+        parent[i] = find(parent, parent[i]); // Path compression
     }
-    return find(parent, parent[i]);
+    return parent[i];
 }
 
 /*
@@ -119,7 +119,7 @@ static void generate_maze(char *maze) {
 
     // Initialize union-find structure
     parent = kmalloc(sizeof(int) * (maze_width * maze_height), GFP_KERNEL);
-    for (i = 0; i < (maze_width * maze_height); i++) {
+    for (i = 0; i < maze_width * maze_height; i++) {
         parent[i] = i;
     }
 
@@ -133,19 +133,23 @@ static void generate_maze(char *maze) {
 
     // Apply Kruskal's algorithm
     for (i = 0; i < edge_count; i++) {
-        int start_root = find(parent, edges[i].start.y * maze_width + edges[i].start.x);
-        int end_root = find(parent, edges[i].end.y * maze_width + edges[i].end.x);
+        int start_index = edges[i].start.y * maze_width + edges[i].start.x;
+        int end_index = edges[i].end.y * maze_width + edges[i].end.x;
+        
+        int start_root = find(parent, start_index);
+        int end_root = find(parent, end_index);
 
         if (start_root != end_root) {
-            union_sets(parent, start_root, end_root);
+            union_sets(parent, start_index, end_index);
+            // Set walls to spaces in maze
             maze[edges[i].start.y * (maze_width + 1) + edges[i].start.x] = ' ';
             maze[edges[i].end.y * (maze_width + 1) + edges[i].end.x] = ' ';
         }
     }
 
     // Create entrance and exit
-    maze[1 * (maze_width + 1)] = ' '; // Entrance at (1, 0)
-    maze[(maze_height - 2) * (maze_width + 1) + (maze_width - 1)] = ' '; // Exit at (height-2, width-1)
+    maze[0 * (maze_width + 1) + 1] = ' '; // Entrance at (0, 1)
+    maze[(maze_height - 1) * (maze_width + 1) + (maze_width - 2)] = ' '; // Exit at (height-1, width-2)
 
     kfree(parent);
 }
