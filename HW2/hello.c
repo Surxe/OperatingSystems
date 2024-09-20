@@ -17,8 +17,8 @@ MODULE_AUTHOR("Ethan E");
 static const struct file_operations ethan_proc_ops;
 
 /* Maze dimensions */
-static int maze_width = 30;
-static int maze_height = 20;
+static int maze_width = 15;
+static int maze_height = 15;
 static char *maze;
 
 /* Struct for a maze cell's coordinates */
@@ -127,8 +127,13 @@ static void generate_maze(void) {
         frontiers[index] = frontiers[--frontier_count];
     }
 
-    // Set the ending position (maze_height-1, maze_width-2) as a walkway
-    maze[(maze_height - 1) * (maze_width + 1) + (maze_width - 2)] = ' ';
+    // Mark the start position with 'S'
+    maze[start_y * (maze_width + 1) + start_x] = 'S';
+
+    // Set the ending position (maze_height-2, maze_width-2) as a walkway and mark it with 'E'
+    int end_x = maze_width - 2;
+    int end_y = maze_height - 2;
+    maze[end_y * (maze_width + 1) + end_x] = 'E';
 }
 
 /*
