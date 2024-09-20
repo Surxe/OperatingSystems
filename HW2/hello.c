@@ -51,12 +51,27 @@ static void __exit ethan_exit(void) {
 /*
 Name: Ethan E
 Date: 9/19/24
+Description: Count the number of elements in a linked list
+*/
+static int list_count(struct list_head *head) {
+    struct list_head *pos;
+    int count = 0;
+
+    list_for_each(pos, head) {
+        count++;
+    }
+    return count;
+}
+
+/*
+Name: Ethan E
+Date: 9/19/24
 Description: Custom read function that outputs a generated ASCII maze
 */
 static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, loff_t *pos) {
     struct timespec64 ts;
     char *maze;
-    int i, j, random_index;
+    int i, j, random_index, wall_count;
     ssize_t len; 
 
     if (*pos > 0) return 0; // Prevent reading it many times
@@ -99,8 +114,10 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
         struct cell *current_wall;
         struct list_head *pos;
 
+        // Count the walls in the list
+        wall_count = list_count(&walls);
         // Pick a random wall from the list
-        random_index = prandom_u32() % (int)list_size(&walls);
+        random_index = prandom_u32() % wall_count;
         pos = walls.next;
         for (i = 0; i < random_index; i++) {
             pos = pos->next;
