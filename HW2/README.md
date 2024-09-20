@@ -1,3 +1,4 @@
-sudo insmod hello.ko
-cat /proc/ethan_maze
-sudo rmmod hello
+cd HW2
+python main.py
+
+# It will make, add module, read proc, remove module
