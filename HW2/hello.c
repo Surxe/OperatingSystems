@@ -54,9 +54,13 @@ Date: 9/19/24
 Description: Function to generate a maze using Prim's algorithm
 */
 static void generate_maze(char *maze) {
-    struct Cell cells[MAZE_WIDTH * MAZE_HEIGHT];
+    struct Cell *cells;
     int cellCount = 0;
     int i, j, randIndex;
+
+    // Allocate memory for cells
+    cells = kmalloc(MAZE_WIDTH * MAZE_HEIGHT * sizeof(struct Cell), GFP_KERNEL);
+    if (!cells) return; // Handle memory allocation failure
 
     // Initialize the maze with walls
     for (i = 0; i < MAZE_HEIGHT; i++) {
@@ -99,6 +103,9 @@ static void generate_maze(char *maze) {
 
     // Set end position (MAZE_HEIGHT-1, MAZE_WIDTH-2) as a walkway
     maze[(MAZE_HEIGHT - 1) * (MAZE_WIDTH + 1) + (MAZE_WIDTH - 2)] = ' ';
+
+    // Free allocated memory
+    kfree(cells);
 }
 
 /*
