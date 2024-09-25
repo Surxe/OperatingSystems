@@ -1,13 +1,14 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/proc_fs.h>
-#include <linux/uaccess.h> // For copy_to_user
+#include <linux/uaccess.h> // For copy_to_user and copy_from_user
 #include <linux/slab.h> // For kmalloc and kfree
 #include <linux/random.h> // For prandom_u32
 #include <linux/timekeeping.h> // For ktime_get_real_ts64()
 #include <linux/fs.h> // For file_operations
 
 #define PROC_NAME "ethan_maze"
+#define MAX_INPUT_LEN 32
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("A simple module that generates an ASCII maze in the proc file system");
@@ -16,10 +17,13 @@ MODULE_AUTHOR("Ethan E");
 /* Forward declaration of the file operations structure */
 static const struct file_operations ethan_proc_ops;
 
-/* Maze dimensions */
+/* Maze dimensions (default values) */
 static int maze_width = 15;
 static int maze_height = 15;
 static char *maze;
+
+/* Buffer for user input */
+static char input_buffer[MAX_INPUT_LEN];
 
 /* Struct for a maze cell's coordinates */
 struct cell {
@@ -167,10 +171,45 @@ static ssize_t ethan_read(struct file *file, char __user *buf, size_t count, lof
     return len;
 }
 
+/*
+Name: Ethan E
+Date: 9/19/24
+Description: Custom write function to accept parameters for maze dimensions
+*/
+static ssize_t ethan_write(struct file *file, const char __user *buf, size_t count, loff_t *pos) {
+    char input[MAX_INPUT_LEN];
+    int new_width, new_height;
+
+    if (count > MAX_INPUT_LEN - 1)
+        return -EINVAL; // Input too long
+
+    if (copy_from_user(input, buf, count))
+        return -EFAULT;
+
+    input[count] = '\0'; // Null-terminate the input string
+
+    // Parse the input for width and height
+    if (sscanf(input, "%d %d", &new_width, &new_height) == 2) {
+        // Ensure dimensions are valid
+        if (new_width > 0 && new_height > 0 && new_width <= 100 && new_height <= 100) {
+            maze_width = new_width;
+            maze_height = new_height;
+            printk(KERN_INFO "Maze dimensions set to: %dx%d\n", maze_width, maze_height);
+        } else {
+            printk(KERN_WARNING "Invalid maze dimensions: %dx%d\n", new_width, new_height);
+        }
+    } else {
+        printk(KERN_WARNING "Invalid input format. Expected: <width> <height>\n");
+    }
+
+    return count;
+}
+
 /* Struct for file operations */
 static const struct file_operations ethan_proc_ops = {
     .owner = THIS_MODULE,
     .read = ethan_read, // custom read
+    .write = ethan_write, // custom write to accept parameters
 };
 
 /* Macros */
