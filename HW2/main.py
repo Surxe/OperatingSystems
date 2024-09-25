@@ -16,6 +16,7 @@ def main():
     commands = [
 	{"cmd": "make", "msg": "Compiling the Makefile..."},
         {"cmd": "sudo insmod hello.ko", "msg": "Inserting the kernel module..."},
+	{"cmd": "echo \"11 11\" /proc/ethan_maze", "msg": "Passing 11 and 11 as parameters..."},
         {"cmd": "cat /proc/ethan_maze", "msg": "Reading the maze from /proc/ethan_maze..."},
         {"cmd": "sudo rmmod hello", "msg": "Removing the kernel module..."}
     ]
