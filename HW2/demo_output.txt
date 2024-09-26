@@ -1,0 +1,27 @@
+Script started on Wed 25 Sep 2024 06:34:58 PM MDT
+osc@ubuntu:~/OperatingSystems/HW2$ python main.py
+Compiling the Makefile...
+Inserting the kernel module...
+[sudo] password for osc: 
+Passing 11 and 11 as parameters...
+Reading the maze from /proc/ethan_maze...
+###############
+#S            #
+### ######### #
+#         #   #
+### ### ##### #
+#   #         #
+# ### ### #####
+# #           #
+### ####### ###
+#             #
+# ######### ###
+#             #
+# ####### ### #
+#         #  E#
+###############
+Removing the kernel module...
+osc@ubuntu:~/OperatingSystems/HW2$ exit
+exit
+
+Script done on Wed 25 Sep 2024 06:35:18 PM MDT
