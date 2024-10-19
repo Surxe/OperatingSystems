@@ -2,8 +2,34 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/wait.h>
+#include <ncurses.h>   // Include ncurses library for color handling
+
+void initialize_colors() {
+    initscr();            // Start ncurses mode
+    start_color();        // Enable color functionality
+
+    // Define color pairs for user input and prompt
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);  // Prompt color: green on black
+    init_pair(2, COLOR_CYAN, COLOR_BLACK);   // User input color: cyan on black
+}
+
+void cleanup_ncurses() {
+    endwin();   // Exit ncurses mode
+}
+
+void print_prompt() {
+    attron(COLOR_PAIR(1)); // Turn on the prompt color (green)
+    printf("myShell> ");
+    attroff(COLOR_PAIR(1)); // Turn off the color
+    fflush(stdout);         // Make sure the prompt is printed
+}
+
+void get_user_input(char *input_buffer) {
+    attron(COLOR_PAIR(2));  // Turn on the user input color (cyan)
+    fgets(input_buffer, 1024, stdin);  // Get user input
+    attroff(COLOR_PAIR(2));  // Turn off the color after input
+}
 
 // Function declarations
 void motd();
@@ -15,6 +41,7 @@ int isBackground(char *input);
 
 int main() {
     char input[1024];
+    initialize_colors();
     char *args[64];
     int background;
     motd();
@@ -31,6 +58,8 @@ int main() {
         else if (status == -1) runCommand(args, background);
     }
 
+    cleanup_ncurses();
+    
     return 0;
 }
 
@@ -41,7 +70,7 @@ void motd() {
 }
 
 void prompt() {
-    printf("\033[1;34mmy-shell$\033[0m ");
+    printf("\033[1;34mEthanShell$\033[0m ");
 }
 
 void parseInput(char *input, char **args) {
