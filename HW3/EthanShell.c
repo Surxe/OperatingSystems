@@ -3,76 +3,37 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <ncurses.h>   // Include ncurses library for color handling
+#include <ncurses.h>
+
+#define MAX_ARGS 64
+#define MAX_CMD_LENGTH 1024
 
 void initialize_colors() {
-    initscr();            // Start ncurses mode
-    cbreak();             // Disable line buffering
-    start_color();        // Enable color functionality
-
-    // Define color pairs for user input and prompt
-    init_pair(1, COLOR_GREEN, COLOR_BLACK);  // Prompt color: green on black
-    init_pair(2, COLOR_CYAN, COLOR_BLACK);   // User input color: cyan on black
+    initscr();
+    start_color();
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_CYAN, COLOR_BLACK);
 }
 
 void cleanup_ncurses() {
-    endwin();   // Exit ncurses mode
+    endwin();
 }
 
 void print_prompt() {
-    attron(COLOR_PAIR(1)); // Turn on the prompt color (green)
-    printw("myShell> ");   // Use printw instead of printf
-    attroff(COLOR_PAIR(1)); // Turn off the color
-    refresh();             // Refresh to show the output
+    attron(COLOR_PAIR(1));
+    printf("myShell> ");
+    attroff(COLOR_PAIR(1));
+    fflush(stdout);
 }
 
-void get_user_input(char *input_buffer, size_t size) {
-    attron(COLOR_PAIR(2));  // Turn on the user input color (cyan)
-    echo();                 // Enable echo to display user input
-    getnstr(input_buffer, size - 1);  // Get user input
-    attroff(COLOR_PAIR(2));  // Turn off the color after input
-    noecho();               // Disable echo again
+void get_user_input(char *input_buffer) {
+    attron(COLOR_PAIR(2));
+    fgets(input_buffer, MAX_CMD_LENGTH, stdin);
+    attroff(COLOR_PAIR(2));
 }
-
-// Function declarations
-void motd();
-void prompt();
-void parseInput(char *input, char **args);
-int executeCommand(char **args);
-void runCommand(char **args, int background);
-int isBackground(char *input);
-
-int main() {
-    char input[1024];
-    initialize_colors();
-    char *args[64];
-    int background;
-    motd();
-
-    while (1) {
-        print_prompt();  // Changed to print_prompt
-        get_user_input(input, sizeof(input));  // Get user input
-
-        background = isBackground(input);
-        parseInput(input, args);
-        
-        int status = executeCommand(args);
-        if (status == 0) break; // Exit command
-        else if (status == -1) runCommand(args, background);
-    }
-
-    cleanup_ncurses();
-    
-    return 0;
-}
-
-// Implement your functions here...
 
 void motd() {
-    attron(COLOR_PAIR(1));  // Set the color for the message
-    printw("Welcome to My Custom Shell!\n");
-    attroff(COLOR_PAIR(1));  // Reset the color
-    refresh();  // Refresh to show the message
+    printf("\033[1;32mWelcome to My Custom Shell!\033[0m\n");
 }
 
 void parseInput(char *input, char **args) {
@@ -87,46 +48,120 @@ void parseInput(char *input, char **args) {
 
 int executeCommand(char **args) {
     if (strcmp(args[0], "cd") == 0) {
-        chdir(args[1]);
-        return 1;
+        if (args[1] != NULL) {
+            chdir(args[1]);
+        }
+        return 1; // Command executed
     } else if (strcmp(args[0], "exit") == 0) {
         return 0; // Exit the shell
     }
-    return -1; // Command needs to be executed by exec
+    return -1; // Command needs to be executed
 }
 
 void runCommand(char **args, int background) {
-    pid_t pid = fork();
-    if (pid == 0) {
-        // Child process
-        if (execvp(args[0], args) == -1) {
-            perror("Error executing command");
+    int pipe_fd[2];
+    if (strchr(args[0], '|')) {
+        char *cmd1[MAX_ARGS];
+        char *cmd2[MAX_ARGS];
+        int i = 0;
+
+        // Split commands at the pipe symbol
+        char *token = strtok(args[0], "|");
+        while (token != NULL) {
+            if (i == 0) {
+                cmd1[i++] = token;
+            } else {
+                cmd2[i - 1] = token; // Put the second command in the second array
+            }
+            token = strtok(NULL, "|");
         }
-        exit(EXIT_FAILURE);
-    } else if (pid > 0) {
+        cmd1[i] = NULL; // Terminate first command
+        cmd2[i - 1] = NULL; // Terminate second command
+
+        // Create the pipe
+        if (pipe(pipe_fd) == -1) {
+            perror("pipe failed");
+            return;
+        }
+
+        pid_t pid1 = fork();
+        if (pid1 == 0) {
+            // First child process
+            dup2(pipe_fd[1], STDOUT_FILENO); // Redirect stdout to pipe
+            close(pipe_fd[0]);
+            execvp(cmd1[0], cmd1);
+            perror("Error executing command 1");
+            exit(EXIT_FAILURE);
+        }
+
+        pid_t pid2 = fork();
+        if (pid2 == 0) {
+            // Second child process
+            dup2(pipe_fd[0], STDIN_FILENO); // Redirect stdin to pipe
+            close(pipe_fd[1]);
+            execvp(cmd2[0], cmd2);
+            perror("Error executing command 2");
+            exit(EXIT_FAILURE);
+        }
+
+        close(pipe_fd[0]);
+        close(pipe_fd[1]);
+
         if (!background) {
-            // If it's not a background process, wait for it to finish
-            printw("-------------------- Starting program --------------------------\n");
-            refresh();  // Refresh to show the output
-            wait(NULL);
-            printw("-------------------- Program ended -----------------------------\n");
-            refresh();  // Refresh to show the output
+            waitpid(pid1, NULL, 0);
+            waitpid(pid2, NULL, 0);
         }
     } else {
-        perror("Fork failed");
+        // Handle single command execution as before
+        pid_t pid = fork();
+        if (pid == 0) {
+            if (execvp(args[0], args) == -1) {
+                perror("Error executing command");
+            }
+            exit(EXIT_FAILURE);
+        } else if (pid > 0) {
+            if (!background) {
+                printf("-------------------- Starting program --------------------------\n");
+                wait(NULL);
+                printf("-------------------- Program ended -----------------------------\n");
+            }
+        } else {
+            perror("Fork failed");
+        }
     }
 }
 
 int isBackground(char *input) {
-    // Remove trailing newline character
     if (input[strlen(input) - 1] == '\n') {
         input[strlen(input) - 1] = '\0';
     }
 
-    // Check if the last character is '&'
     if (input[strlen(input) - 1] == '&') {
-        input[strlen(input) - 1] = '\0';  // Remove '&' from the input
+        input[strlen(input) - 1] = '\0';
         return 1;
     }
+    return 0;
+}
+
+int main() {
+    char input[MAX_CMD_LENGTH];
+    char *args[MAX_ARGS];
+    int background;
+    initialize_colors();
+    motd();
+
+    while (1) {
+        print_prompt();
+        get_user_input(input);
+
+        background = isBackground(input);
+        parseInput(input, args);
+
+        int status = executeCommand(args);
+        if (status == 0) break; // Exit command
+        else if (status == -1) runCommand(args, background);
+    }
+
+    cleanup_ncurses();
     return 0;
 }
