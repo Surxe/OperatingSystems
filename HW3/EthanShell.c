@@ -6,32 +6,32 @@
 #include <ncurses.h>
 
 void initialize_colors() {
-    initscr();            // Start ncurses mode
+    initscr();
     cbreak();             // Disable line buffering
-    start_color();        // Enable color functionality
+    start_color();
 
     // Define color pairs for user input and prompt
-    init_pair(1, COLOR_GREEN, COLOR_BLACK);  // Prompt color: green on black
-    init_pair(2, COLOR_CYAN, COLOR_BLACK);   // User input color: cyan on black
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);  // Prompt color
+    init_pair(2, COLOR_CYAN, COLOR_BLACK);   // User input color
 }
 
 void cleanup_ncurses() {
-    endwin();   // Exit ncurses mode
+    endwin();
 }
 
 void print_prompt() {
-    attron(COLOR_PAIR(1)); // Turn on the prompt color (green)
-    printw("myShell> ");   // Use printw instead of printf
+    attron(COLOR_PAIR(1)); // Turn on the prompt color
+    printw("EthanShell> ");  
     attroff(COLOR_PAIR(1)); // Turn off the color
     refresh();             // Refresh to show the output
 }
 
 void get_user_input(char *input_buffer, size_t size) {
     attron(COLOR_PAIR(2));  // Turn on the user input color (cyan)
-    echo();                 // Enable echo to display user input
+    echo();
     getnstr(input_buffer, size - 1);  // Get user input
     attroff(COLOR_PAIR(2));  // Turn off the color after input
-    noecho();               // Disable echo again
+    noecho();
 }
 
 // Function declarations
