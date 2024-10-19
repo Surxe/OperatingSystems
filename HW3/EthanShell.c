@@ -30,15 +30,28 @@ void get_user_input(char *input_buffer) {
     int i = 0;
     int ch;
 
-    attron(COLOR_PAIR(2));
-    while ((ch = getch()) != '\n' && i < MAX_CMD_LENGTH - 1) {
-        input_buffer[i++] = ch; // Store the character in the buffer
-        printw("%c", ch);       // Print the character on the screen
+    attron(COLOR_PAIR(2));  // Turn on the user input color
+    while (1) {
+        ch = getch();  // Get a character from user input
+
+        if (ch == '\n') {  // If enter is pressed
+            input_buffer[i] = '\0';  // Null-terminate the string
+            break;  // Exit the loop
+        } else if (ch == 127 || ch == KEY_BACKSPACE) { // Handle backspace
+            if (i > 0) {
+                i--;  // Move the buffer index back
+                printw("\b \b"); // Move back, print space, and move back again
+            }
+        } else {
+            input_buffer[i++] = ch;  // Store the character in the buffer
+            printw("%c", ch);  // Print the character on the screen
+        }
+
+        refresh();  // Refresh to show the updated input
     }
-    input_buffer[i] = '\0'; // Null-terminate the string
-    attroff(COLOR_PAIR(2));
-    printw("\n");           // Move to the next line after input
-    refresh();              // Refresh to show the new line
+    attroff(COLOR_PAIR(2));  // Turn off the user input color
+    printw("\n");  // Move to the next line after input
+    refresh();  // Refresh to show the new line
 }
 
 void motd() {
