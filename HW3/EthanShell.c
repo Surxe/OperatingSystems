@@ -8,7 +8,7 @@
 void initialize_colors() {
     initscr();            // Start ncurses mode
     cbreak();             // Disable line buffering
-    noecho();             // Don't echo input
+    noecho();             // Don't echo input by default
     start_color();        // Enable color functionality
 
     // Define color pairs for user input and prompt
@@ -68,7 +68,9 @@ int main() {
 // Implement your functions here...
 
 void motd() {
-    printw("\033[1;32mWelcome to My Custom Shell!\033[0m\n");
+    attron(COLOR_PAIR(1));  // Set the color for the message
+    printw("Welcome to My Custom Shell!\n");
+    attroff(COLOR_PAIR(1));  // Reset the color
     refresh();  // Refresh to show the message
 }
 
