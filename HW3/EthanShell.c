@@ -3,7 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <ncurses.h>   // Include ncurses library for color handling
+#include <ncurses.h>
 
 void initialize_colors() {
     initscr();            // Start ncurses mode
@@ -40,6 +40,7 @@ void prompt();
 void parseInput(char *input, char **args);
 int executeCommand(char **args);
 void runCommand(char **args, int background);
+void runPipeCommand(char *input);
 int isBackground(char *input);
 
 int main() {
@@ -52,6 +53,12 @@ int main() {
     while (1) {
         print_prompt();  // Changed to print_prompt
         get_user_input(input, sizeof(input));  // Get user input
+
+        // Handle pipe commands
+        if (strstr(input, "|") != NULL) {
+            runPipeCommand(input);
+            continue;
+        }
 
         background = isBackground(input);
         parseInput(input, args);
@@ -115,6 +122,54 @@ void runCommand(char **args, int background) {
     } else {
         perror("Fork failed");
     }
+}
+
+void runPipeCommand(char *input) {
+    int pipefd[2]; // Array to hold the pipe file descriptors
+    pid_t pid1, pid2;
+
+    // Split the input on the pipe symbol
+    char *command1 = strtok(input, "|");
+    char *command2 = strtok(NULL, "|");
+
+    if (pipe(pipefd) == -1) {
+        perror("Pipe failed");
+        return;
+    }
+
+    // First command
+    if ((pid1 = fork()) == 0) {
+        // Child process for command 1
+        dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to pipe
+        close(pipefd[0]); // Close unused read end
+        close(pipefd[1]); // Close write end after duplicating
+        char *args1[64];
+        parseInput(command1, args1); // Parse first command
+        execvp(args1[0], args1);
+        perror("Error executing first command");
+        exit(EXIT_FAILURE);
+    }
+
+    // Second command
+    if ((pid2 = fork()) == 0) {
+        // Child process for command 2
+        dup2(pipefd[0], STDIN_FILENO); // Redirect stdin to pipe
+        close(pipefd[1]); // Close unused write end
+        close(pipefd[0]); // Close read end after duplicating
+        char *args2[64];
+        parseInput(command2, args2); // Parse second command
+        execvp(args2[0], args2);
+        perror("Error executing second command");
+        exit(EXIT_FAILURE);
+    }
+
+    // Parent process
+    close(pipefd[0]); // Close read end in parent
+    close(pipefd[1]); // Close write end in parent
+
+    // Wait for both child processes to finish
+    waitpid(pid1, NULL, 0);
+    waitpid(pid2, NULL, 0);
 }
 
 int isBackground(char *input) {
