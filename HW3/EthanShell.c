@@ -7,11 +7,13 @@
 
 void initialize_colors() {
     initscr();            // Start ncurses mode
+    cbreak();             // Disable line buffering
+    noecho();             // Don't echo input
     start_color();        // Enable color functionality
 
     // Define color pairs for user input and prompt
-    init_pair(1, COLOR_BLUE, COLOR_BLACK);   // Prompt color: blue on black
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);   // User input color: green on black
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);  // Prompt color: green on black
+    init_pair(2, COLOR_CYAN, COLOR_BLACK);   // User input color: cyan on black
 }
 
 void cleanup_ncurses() {
@@ -19,15 +21,15 @@ void cleanup_ncurses() {
 }
 
 void print_prompt() {
-    attron(COLOR_PAIR(1)); // Turn on the prompt color (blue)
-    printf("myShell> ");
+    attron(COLOR_PAIR(1)); // Turn on the prompt color (green)
+    printw("myShell> ");   // Use printw instead of printf
     attroff(COLOR_PAIR(1)); // Turn off the color
-    fflush(stdout);         // Make sure the prompt is printed
+    refresh();             // Refresh to show the output
 }
 
-void get_user_input(char *input_buffer) {
-    attron(COLOR_PAIR(2));  // Turn on the user input color (green)
-    fgets(input_buffer, 1024, stdin);  // Get user input
+void get_user_input(char *input_buffer, size_t size) {
+    attron(COLOR_PAIR(2));  // Turn on the user input color (cyan)
+    getnstr(input_buffer, size - 1);  // Get user input, use getnstr for ncurses
     attroff(COLOR_PAIR(2));  // Turn off the color after input
 }
 
@@ -48,8 +50,8 @@ int main() {
 
     while (1) {
         print_prompt();  // Changed to print_prompt
-        get_user_input(input);  // Changed to get_user_input
-        
+        get_user_input(input, sizeof(input));  // Get user input
+
         background = isBackground(input);
         parseInput(input, args);
         
@@ -66,7 +68,8 @@ int main() {
 // Implement your functions here...
 
 void motd() {
-    printf("\033[1;32mWelcome to My Custom Shell!\033[0m\n");
+    printw("\033[1;32mWelcome to My Custom Shell!\033[0m\n");
+    refresh();  // Refresh to show the message
 }
 
 void parseInput(char *input, char **args) {
@@ -100,9 +103,11 @@ void runCommand(char **args, int background) {
     } else if (pid > 0) {
         if (!background) {
             // If it's not a background process, wait for it to finish
-            printf("-------------------- Starting program --------------------------\n");
+            printw("-------------------- Starting program --------------------------\n");
+            refresh();  // Refresh to show the output
             wait(NULL);
-            printf("-------------------- Program ended -----------------------------\n");
+            printw("-------------------- Program ended -----------------------------\n");
+            refresh();  // Refresh to show the output
         }
     } else {
         perror("Fork failed");
