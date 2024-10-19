@@ -1,0 +1,19 @@
+EthanShell.o: In function `initialize_colors':
+EthanShell.c:(.text+0x5): undefined reference to `initscr'
+EthanShell.c:(.text+0xa): undefined reference to `start_color'
+EthanShell.c:(.text+0x1e): undefined reference to `init_pair'
+EthanShell.c:(.text+0x32): undefined reference to `init_pair'
+EthanShell.o: In function `cleanup_ncurses':
+EthanShell.c:(.text+0x3e): undefined reference to `endwin'
+EthanShell.o: In function `print_prompt':
+EthanShell.c:(.text+0x4c): undefined reference to `stdscr'
+EthanShell.c:(.text+0x5e): undefined reference to `wattr_on'
+EthanShell.c:(.text+0x74): undefined reference to `stdscr'
+EthanShell.c:(.text+0x86): undefined reference to `wattr_off'
+EthanShell.o: In function `get_user_input':
+EthanShell.c:(.text+0xab): undefined reference to `stdscr'
+EthanShell.c:(.text+0xbd): undefined reference to `wattr_on'
+EthanShell.c:(.text+0xdc): undefined reference to `stdscr'
+EthanShell.c:(.text+0xee): undefined reference to `wattr_off'
+collect2: error: ld returned 1 exit status
+make: *** [EthanShell] Error 1
