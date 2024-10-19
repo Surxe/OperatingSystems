@@ -8,7 +8,6 @@
 void initialize_colors() {
     initscr();            // Start ncurses mode
     cbreak();             // Disable line buffering
-    noecho();             // Don't echo input by default
     start_color();        // Enable color functionality
 
     // Define color pairs for user input and prompt
@@ -29,8 +28,10 @@ void print_prompt() {
 
 void get_user_input(char *input_buffer, size_t size) {
     attron(COLOR_PAIR(2));  // Turn on the user input color (cyan)
-    getnstr(input_buffer, size - 1);  // Get user input, use getnstr for ncurses
+    echo();                 // Enable echo to display user input
+    getnstr(input_buffer, size - 1);  // Get user input
     attroff(COLOR_PAIR(2));  // Turn off the color after input
+    noecho();               // Disable echo again
 }
 
 // Function declarations
