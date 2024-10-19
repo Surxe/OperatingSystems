@@ -42,11 +42,11 @@ void get_user_input(char *input_buffer) {
                 i--;  // Move the buffer index back
                 printw("\b \b"); // Move back, print space, and move back again
             }
-        } else {
+        } else if (ch >= 32 && ch < 127) { // Printable characters
             input_buffer[i++] = ch;  // Store the character in the buffer
             printw("%c", ch);  // Print the character on the screen
         }
-
+        
         refresh();  // Refresh to show the updated input
     }
     attroff(COLOR_PAIR(2));  // Turn off the user input color
