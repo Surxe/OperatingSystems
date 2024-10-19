@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -lncurses  # Link with ncurses library
 TARGET = EthanShell
 
 all: $(TARGET)
@@ -11,9 +11,10 @@ $(TARGET).o: $(TARGET).c
 	$(CC) $(CFLAGS) -c $(TARGET).c
 
 clean:
-	rm -r *.o $(TARGET)
+	rm -f *.o $(TARGET)
 
-install:
+install: $(TARGET)
 	sudo cp $(TARGET) /bin/
 
-uninstall: sudo rm /bin/$(TARGET)
+uninstall:
+	sudo rm /bin/$(TARGET)
