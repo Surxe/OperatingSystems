@@ -11,8 +11,8 @@
 void initialize_colors() {
     initscr();
     start_color();
-    init_pair(1, COLOR_GREEN, COLOR_BLACK);
-    init_pair(2, COLOR_CYAN, COLOR_BLACK);
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);  // Prompt color
+    init_pair(2, COLOR_CYAN, COLOR_BLACK);   // User input color
 }
 
 void cleanup_ncurses() {
@@ -21,19 +21,30 @@ void cleanup_ncurses() {
 
 void print_prompt() {
     attron(COLOR_PAIR(1));
-    printf("myShell> ");
+    printw("myShell> ");  // Use printw instead of printf
     attroff(COLOR_PAIR(1));
-    fflush(stdout);
+    refresh();           // Refresh to show the prompt
 }
 
 void get_user_input(char *input_buffer) {
+    int i = 0;
+    int ch;
+
     attron(COLOR_PAIR(2));
-    fgets(input_buffer, MAX_CMD_LENGTH, stdin);
+    while ((ch = getch()) != '\n' && i < MAX_CMD_LENGTH - 1) {
+        input_buffer[i++] = ch; // Store the character in the buffer
+        printw("%c", ch);       // Print the character on the screen
+    }
+    input_buffer[i] = '\0'; // Null-terminate the string
     attroff(COLOR_PAIR(2));
+    printw("\n");           // Move to the next line after input
+    refresh();              // Refresh to show the new line
 }
 
 void motd() {
-    printf("\033[1;32mWelcome to My Custom Shell!\033[0m\n");
+    attron(COLOR_PAIR(1));
+    printw("Welcome to My Custom Shell!\n");
+    attroff(COLOR_PAIR(1));
 }
 
 void parseInput(char *input, char **args) {
@@ -60,13 +71,12 @@ int executeCommand(char **args) {
 
 void runCommand(char **args, int background) {
     int pipe_fd[2];
+    char *cmd1[MAX_ARGS], *cmd2[MAX_ARGS];
+    
     if (strchr(args[0], '|')) {
-        char *cmd1[MAX_ARGS];
-        char *cmd2[MAX_ARGS];
-        int i = 0;
-
-        // Split commands at the pipe symbol
         char *token = strtok(args[0], "|");
+        int i = 0;
+        
         while (token != NULL) {
             if (i == 0) {
                 cmd1[i++] = token;
@@ -147,6 +157,7 @@ int main() {
     char input[MAX_CMD_LENGTH];
     char *args[MAX_ARGS];
     int background;
+    
     initialize_colors();
     motd();
 
