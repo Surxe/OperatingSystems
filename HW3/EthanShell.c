@@ -10,8 +10,8 @@ void initialize_colors() {
     start_color();        // Enable color functionality
 
     // Define color pairs for user input and prompt
-    init_pair(1, COLOR_GREEN, COLOR_BLACK);  // Prompt color: green on black
-    init_pair(2, COLOR_CYAN, COLOR_BLACK);   // User input color: cyan on black
+    init_pair(1, COLOR_BLUE, COLOR_BLACK);   // Prompt color: blue on black
+    init_pair(2, COLOR_GREEN, COLOR_BLACK);   // User input color: green on black
 }
 
 void cleanup_ncurses() {
@@ -19,14 +19,14 @@ void cleanup_ncurses() {
 }
 
 void print_prompt() {
-    attron(COLOR_PAIR(1)); // Turn on the prompt color (green)
+    attron(COLOR_PAIR(1)); // Turn on the prompt color (blue)
     printf("myShell> ");
     attroff(COLOR_PAIR(1)); // Turn off the color
     fflush(stdout);         // Make sure the prompt is printed
 }
 
 void get_user_input(char *input_buffer) {
-    attron(COLOR_PAIR(2));  // Turn on the user input color (cyan)
+    attron(COLOR_PAIR(2));  // Turn on the user input color (green)
     fgets(input_buffer, 1024, stdin);  // Get user input
     attroff(COLOR_PAIR(2));  // Turn off the color after input
 }
@@ -47,8 +47,8 @@ int main() {
     motd();
 
     while (1) {
-        prompt();
-        fgets(input, sizeof(input), stdin);
+        print_prompt();  // Changed to print_prompt
+        get_user_input(input);  // Changed to get_user_input
         
         background = isBackground(input);
         parseInput(input, args);
@@ -67,10 +67,6 @@ int main() {
 
 void motd() {
     printf("\033[1;32mWelcome to My Custom Shell!\033[0m\n");
-}
-
-void prompt() {
-    printf("\033[1;34mEthanShell$\033[0m ");
 }
 
 void parseInput(char *input, char **args) {
@@ -113,7 +109,6 @@ void runCommand(char **args, int background) {
     }
 }
 
-
 int isBackground(char *input) {
     // Remove trailing newline character
     if (input[strlen(input) - 1] == '\n') {
@@ -127,4 +122,3 @@ int isBackground(char *input) {
     }
     return 0;
 }
-
