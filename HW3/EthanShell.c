@@ -74,19 +74,28 @@ void runCommand(char **args, int background) {
         exit(EXIT_FAILURE);
     } else if (pid > 0) {
         if (!background) {
-            printf("--------------------Starting program --------------------------\n");
+            // If it's not a background process, wait for it to finish
+            printf("-------------------- Starting program --------------------------\n");
             wait(NULL);
-            printf("__________________Program ended --------------\n");
+            printf("-------------------- Program ended -----------------------------\n");
         }
     } else {
         perror("Fork failed");
     }
 }
 
+
 int isBackground(char *input) {
+    // Remove trailing newline character
+    if (input[strlen(input) - 1] == '\n') {
+        input[strlen(input) - 1] = '\0';
+    }
+
+    // Check if the last character is '&'
     if (input[strlen(input) - 1] == '&') {
         input[strlen(input) - 1] = '\0';  // Remove '&' from the input
         return 1;
     }
     return 0;
 }
+
