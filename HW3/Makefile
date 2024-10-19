@@ -1,14 +1,15 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -lncurses  # Link with ncurses library
+CFLAGS = -Wall -Wextra -c  # Compile flags (just compile, no linking)
+LDFLAGS = -lncurses        # Linker flags for ncurses
 TARGET = EthanShell
 
 all: $(TARGET)
 
 $(TARGET): $(TARGET).o
-	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).o
+	$(CC) -o $(TARGET) $(TARGET).o $(LDFLAGS)  # Link with ncurses library here
 
 $(TARGET).o: $(TARGET).c
-	$(CC) $(CFLAGS) -c $(TARGET).c
+	$(CC) $(CFLAGS) $(TARGET).c
 
 clean:
 	rm -f *.o $(TARGET)
