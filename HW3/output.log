@@ -1,55 +1,288 @@
-Script started on Sat 19 Oct 2024 02:04:50 PM MDT
+Script started on Wed 23 Oct 2024 02:28:08 PM MDT
 osc@ubuntu:~/OperatingSystems/HW3$ make
 gcc -Wall -Wextra -c     EthanShell.c
 gcc -o EthanShell EthanShell.o -lncurses            # Link with ncurses library
 osc@ubuntu:~/OperatingSystems/HW3$ make install
 sudo cp EthanShell /bin/
 [sudo] password for osc: 
-osc@ubuntu:~/OperatingSystems/HW3$ eth[K[K[Ksu - ethan
+osc@ubuntu:~/OperatingSystems/HW3$ su - ethan
 Password: 
 [1;37r[0;10m[4l[?7h[39;49m[39;49m[37m[40m[H[J[32m[40mWelcome to My Custom Shell!
-[0;10m[39;49m[37m[40m[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40mm[0;10m[39;49m[37m[40m[36m[40mk[0;10m[39;49m[37m[40m[36m[40md[0;10m[39;49m[37m[40m[36m[40mi[0;10m[39;49m[37m[40m[36m[40mr[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40mm[0;10m[39;49m[37m[40m[36m[40my[0;10m[39;49m[37m[40m[36m[40md[0;10m[39;49m[37m[40m[36m[40mi[0;10m[39;49m[37m[40m[36m[40mr[0;10m[39;49m[37m[40m
+[0;10m[39;49m[37m[40m[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m[36m[40ms[0;10m[39;49m[37m[40m
+-------------------- Starting program --------------------------
+|  test_pipe????mkdir
+-------------------- Program ended -----------------------------
+[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m[36m[40ms[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m-[0;10m[39;49m[37m[40m[36m[40mA[0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m
+-------------------- Starting program --------------------------
+total 24
+drwxrwxr-x 2 ethan ethan 4096 Oct 19 13:42 |
+-rw-r--r-- 1 ethan ethan  220 Aug 31  2015 .bash_logout
+-rw-r--r-- 1 ethan ethan 3771 Aug 31  2015 .bashrc
+-rw-r--r-- 1 ethan ethan  655 May 16  2017 .profile
+drwxrwxr-x 2 ethan ethan 4096 Oct 19 13:42 test_pipe????mkdir
+-rw------- 1 ethan ethan 1267 Oct 19 14:06 .viminfo
+-------------------- Program ended -----------------------------
+[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40mc[0;10m[39;49m[37m[40m[36m[40ma[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m/[0;10m[39;49m[37m[40m[36m[40mh[0;10m[39;49m[37m[40m[36m[40mo[0;10m[39;49m[37m[40m[36m[40mm[0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40m/[0;10m[39;49m[37m[40m[36m[40mo[0;10m[39;49m[37m[40m[36m[40ms[0;10m[39;49m[37m[40m[36m[40mc[0;10m[39;49m[37m[40m[36m[40m/[0;10m[39;49m[37m[40m[36m[40mO[0;10m[39;49m[37m[40m[36m[40mp[0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40mr[0;10m[39;49m[37m[40m[36m[40ma[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40mi[0;10m[39;49m[37m[40m[36m[40mn[0;10m[39;49m[37m[40m[36m[40mg[0;10m[39;49m[37m[40m[36m[40mS[0;10m[39;49m[37m[40m[36m[40my[0;10m[39;49m[37m[40m[36m[40ms[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40mm[0;10m[39;49m[37m[40m[36m[40ms[0;10m[39;49m[37m[40m[36m[40m/[0;10m[39;49m[37m[40m[36m[40mH[0;10m[39;49m[37m[40m[36m[40mW[0;10m[39;49m[37m[40m[36m[40m3[0;10m[39;49m[37m[40m[36m[40m/[0;10m[39;49m[37m[40m[36m[40mE[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40mh[0;10m[39;49m[37m[40m[36m[40ma[0;10m[39;49m[37m[40m[36m[40mn[0;10m[39;49m[37m[40m[36m[40mS[0;10m[39;49m[37m[40m[36m[40mh[0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m[36m[40m.[0;10m[39;49m[37m[40m[36m[40mc[0;10m[39;49m[37m[40m
+-------------------- Starting program --------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <ncurses.h>
+
+void initialize_colors() {
+    initscr();
+    cbreak();             // Disable line buffering
+    start_color();
+
+    // Define color pairs for user input and prompt
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);  // Prompt color
+    init_pair(2, COLOR_CYAN, COLOR_BLACK);   // User input color
+}
+
+void cleanup_ncurses() {
+    endwin();
+}
+
+void print_prompt() {
+    attron(COLOR_PAIR(1)); // Turn on the prompt color
+    printw("EthanShell> ");  
+    attroff(COLOR_PAIR(1)); // Turn off the color
+    refresh();             // Refresh to show the output
+}
+
+void get_user_input(char *input_buffer, size_t size) {
+    attron(COLOR_PAIR(2));  // Turn on the user input color (cyan)
+    echo();
+    getnstr(input_buffer, size - 1);  // Get user input
+    attroff(COLOR_PAIR(2));  // Turn off the color after input
+    noecho();
+}
+
+// Function declarations
+void motd();
+void prompt();
+void parseInput(char *input, char **args);
+int executeCommand(char **args);
+void runCommand(char **args, int background);
+void runPipeCommand(char *input);
+int isBackground(char *input);
+
+int main() {
+    char input[1024];
+    initialize_colors();
+    char *args[64];
+    int background;
+    motd();
+
+    while (1) {
+        print_prompt();  // Changed to print_prompt
+        get_user_input(input, sizeof(input));  // Get user input
+
+        // Handle pipe commands
+        if (strstr(input, "|") != NULL) {
+            runPipeCommand(input);
+            continue;
+        }
+
+        background = isBackground(input);
+        parseInput(input, args);
+        
+        int status = executeCommand(args);
+        if (status == 0) break; // Exit command
+        else if (status == -1) runCommand(args, background);
+    }
+
+    cleanup_ncurses();
+    
+    return 0;
+}
+
+// Implement your functions here...
+
+void motd() {
+    attron(COLOR_PAIR(1));  // Set the color for the message
+    printw("Welcome to My Custom Shell!\n");
+    attroff(COLOR_PAIR(1));  // Reset the color
+    refresh();  // Refresh to show the message
+}
+
+void parseInput(char *input, char **args) {
+    char *token = strtok(input, " \n");
+    int i = 0;
+    while (token != NULL) {
+        args[i++] = token;
+        token = strtok(NULL, " \n");
+    }
+    args[i] = NULL; // Mark the end of the arguments
+}
+
+int executeCommand(char **args) {
+    if (strcmp(args[0], "cd") == 0) {
+        chdir(args[1]);
+        return 1;
+    } else if (strcmp(args[0], "exit") == 0) {
+        return 0; // Exit the shell
+    }
+    return -1; // Command needs to be executed by exec
+}
+
+void runCommand(char **args, int background) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        // Child process
+        if (execvp(args[0], args) == -1) {
+            perror("Error executing command");
+        }
+        exit(EXIT_FAILURE);
+    } else if (pid > 0) {
+        if (!background) {
+            // If it's not a background process, wait for it to finish
+            printw("-------------------- Starting program --------------------------\n");
+            refresh();  // Refresh to show the output
+            wait(NULL);
+            printw("-------------------- Program ended -----------------------------\n");
+            refresh();  // Refresh to show the output
+        }
+    } else {
+        perror("Fork failed");
+    }
+}
+
+void runPipeCommand(char *input) {
+    int pipefd[2]; // Array to hold the pipe file descriptors
+    pid_t pid1, pid2;
+
+    // Split the input on the pipe symbol
+    char *command1 = strtok(input, "|");
+    char *command2 = strtok(NULL, "|");
+
+    if (pipe(pipefd) == -1) {
+        perror("Pipe failed");
+        return;
+    }
+
+    // First command
+    if ((pid1 = fork()) == 0) {
+        // Child process for command 1
+        dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to pipe
+        close(pipefd[0]); // Close unused read end
+        close(pipefd[1]); // Close write end after duplicating
+        char *args1[64];
+        parseInput(command1, args1); // Parse first command
+        execvp(args1[0], args1);
+        perror("Error executing first command");
+        exit(EXIT_FAILURE);
+    }
+
+    // Second command
+    if ((pid2 = fork()) == 0) {
+        // Child process for command 2
+        dup2(pipefd[0], STDIN_FILENO); // Redirect stdin to pipe
+        close(pipefd[1]); // Close unused write end
+        close(pipefd[0]); // Close read end after duplicating
+        char *args2[64];
+        parseInput(command2, args2); // Parse second command
+        execvp(args2[0], args2);
+        perror("Error executing second command");
+        exit(EXIT_FAILURE);
+    }
+
+    // Parent process
+    close(pipefd[0]); // Close read end in parent
+    close(pipefd[1]); // Close write end in parent
+
+    // Wait for both child processes to finish
+    waitpid(pid1, NULL, 0);
+    waitpid(pid2, NULL, 0);
+}
+
+int isBackground(char *input) {
+    // Remove trailing newline character
+    if (input[strlen(input) - 1] == '\n') {
+        input[strlen(input) - 1] = '\0';
+    }
+
+    // Check if the last character is '&'
+    if (input[strlen(input) - 1] == '&') {
+        input[strlen(input) - 1] = '\0';  // Remove '&' from the input
+        return 1;
+    }
+    return 0;
+}
+-------------------- Program ended -----------------------------
+[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m[36m[40ms[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m/[0;10m[39;49m[37m[40m[36m[40mb[0;10m[39;49m[37m[40m[36m[40mi[0;10m[39;49m[37m[40m[36m[40mn[0;10m[39;49m[37m[40m
+-------------------- Starting program --------------------------
+bash		    echo	mt-gnu		  sh.distrib
+btrfs		    ed		mv		  sleep
+btrfs-calc-size     egrep	nano		  ss
+btrfsck		    EthanShell	nc		  static-sh
+btrfs-convert	    false	nc.openbsd	  stty
+btrfs-debug-tree    fgconsole	netcat		  su
+btrfs-find-root     fgrep	netstat		  sync
+btrfs-image	    findmnt	networkctl	  systemctl
+btrfs-map-logical   fsck.btrfs	nisdomainname	  systemd
+btrfs-select-super  fuser	ntfs-3g		  systemd-ask-password
+btrfs-show-super    fusermount	ntfs-3g.probe	  systemd-escape
+btrfstune	    getfacl	ntfs-3g.secaudit  systemd-hwdb
+btrfs-zero-log	    grep	ntfs-3g.usermap   systemd-inhibit
+bunzip2		    gunzip	ntfscat		  systemd-machine-id-setup
+busybox		    gzexe	ntfscluster	  systemd-notify
+bzcat		    gzip	ntfscmp		  systemd-tmpfiles
+bzcmp		    hostname	ntfsfallocate	  systemd-tty-ask-password-agent
+bzdiff		    ip		ntfsfix		  tailf
+bzegrep		    journalctl	ntfsinfo	  tar
+bzexe		    kbd_mode	ntfsls		  tempfile
+bzfgrep		    kill	ntfsmove	  touch
+bzgrep		    kmod	ntfstruncate	  true
+bzip2		    less	ntfswipe	  udevadm
+bzip2recover	    lessecho	open		  ulockmgr_server
+bzless		    lessfile	openvt		  umount
+bzmore		    lesskey	pidof		  uname
+cat		    lesspipe	ping		  uncompress
+chacl		    ln		ping6		  unicode_start
+chgrp		    loadkeys	plymouth	  vdir
+chmod		    login	ps		  wdctl
+chown		    loginctl	pwd		  which
+chvt		    lowntfs-3g	rbash		  whiptail
+cp		    ls		readlink	  ypdomainname
+cpio		    lsblk	red		  zcat
+dash		    lsmod	rm		  zcmp
+date		    mkdir	rmdir		  zdiff
+dd		    mkfs.btrfs	rnano		  zegrep
+df		    mknod	run-parts	  zfgrep
+dir		    mktemp	sed		  zforce
+dmesg		    more	setfacl		  zgrep
+dnsdomainname	    mount	setfont		  zless
+domainname	    mountpoint	setupcon	  zmore
+dumpkeys	    mt		sh		  znew
+-------------------- Program ended -----------------------------
+[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40mm[0;10m[39;49m[37m[40m[36m[40mk[0;10m[39;49m[37m[40m[36m[40md[0;10m[39;49m[37m[40m[36m[40mi[0;10m[39;49m[37m[40m[36m[40mr[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40mm[0;10m[39;49m[37m[40m[36m[40mp[0;10m[39;49m[37m[40m
 -------------------- Starting program --------------------------
 -------------------- Program ended -----------------------------
-[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40mn[0;10m[39;49m[37m[40m[36m[40mv[0;10m[39;49m[37m[40m
+[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40mc[0;10m[39;49m[37m[40m[36m[40md[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40mm[0;10m[39;49m[37m[40m[36m[40mp[0;10m[39;49m[37m[40m
+[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40mp[0;10m[39;49m[37m[40m[36m[40mw[0;10m[39;49m[37m[40m[36m[40md[0;10m[39;49m[37m[40m
 -------------------- Starting program --------------------------
-TERM=linux
-PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
-LANG=en_US.UTF-8
-MAIL=/var/mail/ethan
-HOME=/home/ethan
-SHELL=/bin/EthanShell
-USER=ethan
-LOGNAME=ethan
+/home/ethan/temp
 -------------------- Program ended -----------------------------
-[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40mv[0;10m[39;49m[37m[40m[36m[40mi[0;10m[39;49m[37m[40m[36m[40mm[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40mm[0;10m[39;49m[37m[40m[36m[40my[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40mx[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40m.[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40mx[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m
+[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40mc[0;10m[39;49m[37m[40m[36m[40md[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m.[0;10m[39;49m[37m[40m[36m[40m.[0;10m[39;49m[37m[40m
+[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40mp[0;10m[39;49m[37m[40m[36m[40mw[0;10m[39;49m[37m[40m[36m[40md[0;10m[39;49m[37m[40m
 -------------------- Starting program --------------------------
-[2;1H▽[6n[2;1H  [1;1H[1;37r[?25h[?8c[?25h[?0c[27m[24m[0m[H[J[?25l[?1c[37;1H"mytxt.txt" [New File][2;1H[1m[34m~                                                                                                   [3;1H~                                                                                                   [4;1H~                                                                                                   [5;1H~                                                                                                   [6;1H~                                                                                                   [7;1H~                                                                                                   [8;1H~                                                                                                   [9;1H~                                                                                                   [10;1H~                                                                                                   [11;1H~                                                                                                   [12;1H~                                                                                                   [13;1H~                                                                                                   [14;1H~                                                                                                   [15;1H~                                                                                                   [16;1H~                                                                                                   [17;1H~                                                                                                   [18;1H~                                                                                                   [19;1H~                                                                                                   [20;1H~                                                                                                   [21;1H~                                                                                                   [22;1H~                                                                                                   [23;1H~                                                                                                   [24;1H~                                                                                                   [25;1H~                                                                                                   [26;1H~                                                                                                   [27;1H~                                                                                                   [28;1H~                                                                                                   [29;1H~                                                                                                   [30;1H~                                                                                                   [31;1H~                                                                                                   [32;1H~                                                                                                   [33;1H~                                                                                                   [34;1H~                                                                                                   [35;1H~                                                                                                   [36;1H~                                                                                                   [0m[37;83H0,0-1[9CAll[1;1H[?25h[?0c[?25l[?1c[37;1H[1m-- INSERT --[0m[37;13H[K[37;83H0,1[11CAll[1;1H[?25h[?0c[?25l[?1cl[37;83H1,2[1;2H[?25h[?0c[?25l[?1ci[37;85H3[1;3H[?25h[?0c[?25l[?1cn[37;85H4[1;4H[?25h[?0c[?25l[?1ce[37;85H5[1;5H[?25h[?0c[?25l[?1c1[37;85H6[1;6H[?25h[?0c[?25l[?1c[2;1H[K[37;83H2,1[2;1H[?25h[?0c[?25l[?1cl[37;85H2[2;2H[?25h[?0c[?25l[?1ci[37;85H3[2;3H[?25h[?0c[?25l[?1cn[37;85H4[2;4H[?25h[?0c[?25l[?1ce[37;85H5[2;5H[?25h[?0c[?25l[?1c2[37;85H6[2;6H[?25h[?0c[?25l[?1c[3;1H[K[37;83H3,1[3;1H[?25h[?0c[?25l[?1cl[37;85H2[3;2H[?25h[?0c[?25l[?1ci[37;85H3[3;3H[?25h[?0c[?25l[?1cn[37;85H4[3;4H[?25h[?0c[?25l[?1ce[37;85H5[3;5H[?25h[?0c[?25l[?1c3[37;85H6[3;6H[?25h[?0c[37;1H[K[3;5H[?25l[?1c[37;83H3,5[11CAll[3;5H[?25h[?0c[?25l[?1c[37;83H[K[37;1H:[?25h[?0cw[?25l[?1c[?25h[?0cq[?25l[?1c[?25h[?0c![?25l[?1c[?25h[?0c[?25l[?1c"mytxt.txt" [New] 3L, 18C written[?25h[?0c
+/home/ethan
 -------------------- Program ended -----------------------------
-[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m[36m[40ms[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m-[0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m|[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40mg[0;10m[39;49m[37m[40m[36m[40mr[0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40mp[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40mc[0;10m[39;49m[37m[40m[36m[40ma[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[C[36m[40mm[0;10m[39;49m[37m[40m[36m[40my[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40mx[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40m.[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40mx[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m|[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40mw[0;10m[39;49m[37m[40m[36m[40mc[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m-[0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m
+[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40mv[0;10m[39;49m[37m[40m[36m[40mi[0;10m[39;49m[37m[40m[36m[40mm[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40mx[0;10m[39;49m[37m[40m[36m[40ma[0;10m[39;49m[37m[40m[36m[40mm[0;10m[39;49m[37m[40m[36m[40mp[0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40m.[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40mx[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m
+-------------------- Starting program --------------------------
+[2;1H▽[6n[2;1H  [1;1H[1;37r[?25h[?8c[?25h[?0c[27m[24m[0m[H[J[?25l[?1c[37;1H"example.txt" [New File][2;1H[1m[34m~                                                                                                   [3;1H~                                                                                                   [4;1H~                                                                                                   [5;1H~                                                                                                   [6;1H~                                                                                                   [7;1H~                                                                                                   [8;1H~                                                                                                   [9;1H~                                                                                                   [10;1H~                                                                                                   [11;1H~                                                                                                   [12;1H~                                                                                                   [13;1H~                                                                                                   [14;1H~                                                                                                   [15;1H~                                                                                                   [16;1H~                                                                                                   [17;1H~                                                                                                   [18;1H~                                                                                                   [19;1H~                                                                                                   [20;1H~                                                                                                   [21;1H~                                                                                                   [22;1H~                                                                                                   [23;1H~                                                                                                   [24;1H~                                                                                                   [25;1H~                                                                                                   [26;1H~                                                                                                   [27;1H~                                                                                                   [28;1H~                                                                                                   [29;1H~                                                                                                   [30;1H~                                                                                                   [31;1H~                                                                                                   [32;1H~                                                                                                   [33;1H~                                                                                                   [34;1H~                                                                                                   [35;1H~                                                                                                   [36;1H~                                                                                                   [0m[37;83H0,0-1[9CAll[1;1H[?25h[?0c[?25l[?1c[37;1H[1m-- INSERT --[0m[37;13H[K[37;83H0,1[11CAll[1;1H[?25h[?0c[?25l[?1cl[37;83H1,2[1;2H[?25h[?0c[?25l[?1ci[37;85H3[1;3H[?25h[?0c[?25l[?1cn[37;85H4[1;4H[?25h[?0c[?25l[?1ce[37;85H5[1;5H[?25h[?0c[?25l[?1c1[37;85H6[1;6H[?25h[?0c[?25l[?1c[2;1H[K[37;83H2,1[2;1H[?25h[?0c[?25l[?1cl[37;85H2[2;2H[?25h[?0c[?25l[?1ci[37;85H3[2;3H[?25h[?0c[?25l[?1cn[37;85H4[2;4H[?25h[?0c[?25l[?1ce[37;85H5[2;5H[?25h[?0c[?25l[?1c2[37;85H6[2;6H[?25h[?0c[?25l[?1c[3;1H[K[37;83H3,1[3;1H[?25h[?0c[?25l[?1cl[37;85H2[3;2H[?25h[?0c[?25l[?1ci[37;85H3[3;3H[?25h[?0c[?25l[?1cn[37;85H4[3;4H[?25h[?0c[?25l[?1ce[37;85H5[3;5H[?25h[?0c[?25l[?1c3[37;85H6[3;6H[?25h[?0c[37;1H[K[3;5H[?25l[?1c[37;83H3,5[11CAll[3;5H[?25h[?0c[?25l[?1c[37;83H[K[37;1H:[?25h[?0cw[?25l[?1c[?25h[?0cq[?25l[?1c[?25h[?0c![?25l[?1c[?25h[?0c[?25l[?1c"example.txt" [New] 3L, 18C written[?25h[?0c
+-------------------- Program ended -----------------------------
+[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40mc[0;10m[39;49m[37m[40m[36m[40ma[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40mx[0;10m[39;49m[37m[40m[36m[40ma[0;10m[39;49m[37m[40m[36m[40mm[0;10m[39;49m[37m[40m[36m[40mp[0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40m.[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40mx[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m|[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40mw[0;10m[39;49m[37m[40m[36m[40mc[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m-[0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m
 3
-[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m[36m[40ms[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m&[0;10m[39;49m[37m[40m
-[32m[40mEthanShell> [0;10m[39;49m[37m[40m|      my_text_file.txt  test_dir	 test_pipe????mkdir  test_txt.txt
-mydir  mytxt.txt	 test_directory  test.txt
-[36m[40mc[0;10m[39;49m[37m[40m[36m[40md[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40m/[0;10m[39;49m[37m[40m
-[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m[36m[40ms[0;10m[39;49m[37m[40m
--------------------- Starting program --------------------------
--------------------- Program ended -----------------------------
-[32m[40mEthanShell> [0;10m[39;49m[37m[40mbin   dev  home        lib    lost+found  mnt  proc  run   snap  sys  usr  vmlinuz
-boot  etc  initrd.img  lib64  media	  opt  root  sbin  srv	 tmp  var
-[36m[40mc[0;10m[39;49m[37m[40m[36m[40md[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40mh[0;10m[39;49m[37m[40m[36m[40mo[0;10m[39;49m[37m[40m[36m[40mm[0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m
-[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m[36m[40ms[0;10m[39;49m[37m[40m
--------------------- Starting program --------------------------
--------------------- Program ended -----------------------------
-[32m[40mEthanShell> [0;10m[39;49m[37m[40methan  osc
-[36m[40mc[0;10m[39;49m[37m[40m[36m[40md[0;10m[39;49m[37m[40m[36m[40m [0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m[36m[40mh[0;10m[39;49m[37m[40m[36m[40ma[0;10m[39;49m[37m[40m[36m[40mn[0;10m[39;49m[37m[40m
-[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40ml[0;10m[39;49m[37m[40m[36m[40ms[0;10m[39;49m[37m[40m
--------------------- Starting program --------------------------
--------------------- Program ended -----------------------------
-[32m[40mEthanShell> [0;10m[39;49m[37m[40m|      my_text_file.txt  test_dir	 test_pipe????mkdir  test_txt.txt
-mydir  mytxt.txt	 test_directory  test.txt
-[36m[40me[0;10m[39;49m[37m[40m[36m[40mx[0;10m[39;49m[37m[40m[36m[40mi[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m
-[39;49m[37m[40m[37d[K[37;1Hosc@ubuntu:~/OperatingSystems/HW3$ exit
+[32m[40mEthanShell> [0;10m[39;49m[37m[40m[36m[40me[0;10m[39;49m[37m[40m[36m[40mx[0;10m[39;49m[37m[40m[36m[40mi[0;10m[39;49m[37m[40m[36m[40mt[0;10m[39;49m[37m[40m
+[39;49m[37m[40m[37d[K[37;1Hosc@ubuntu:~/OperatingSystems/HW3$ make uninstall
+sudo rm /bin/EthanShell
+osc@ubuntu:~/OperatingSystems/HW3$ make clean
+rm -f *.o EthanShell
+osc@ubuntu:~/OperatingSystems/HW3$ exit
 exit
 
-Script done on Sat 19 Oct 2024 02:07:48 PM MDT
+Script done on Wed 23 Oct 2024 02:30:07 PM MDT
