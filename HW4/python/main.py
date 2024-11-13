@@ -199,7 +199,8 @@ class Scheduler:
             # Record ticks in the schedule for the task
             for _ in range(ticks_run):
                 if current_task.is_complete:
-                    break
+                    break  # If task is complete, exit the tick loop
+                
                 # tick_tasks returns True if the task is complete, and decrements duration
                 self._tick_tasks(schedule, current_task, current_tick)
                 current_tick += 1
@@ -207,11 +208,12 @@ class Scheduler:
                 if verbose:
                     print(f'Tick {current_tick}: Ticked task {current_task.name}, remaining duration {current_task.duration}')
 
-            # If the task still has remaining duration, add it back to the end of the queue
+            # Re-add the task to the queue only if it has remaining duration
             if not current_task.is_complete:
                 queue.append(current_task)
 
         return schedule
+
     
     def _calc_avg_wait(self, schedule):
         # Calculate the average wait time
