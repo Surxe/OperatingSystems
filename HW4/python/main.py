@@ -1,5 +1,6 @@
 import copy
 
+
 class Task:
     """
     A class to represent a Task.
@@ -29,7 +30,6 @@ class Task:
         """
         self.duration -= 1
         return self._is_complete()
-
 
 
 class Scheduler:
@@ -398,7 +398,7 @@ def main():
         # Schedule the tasks
         print(f'==={schedule_type}===')
         scheduler = Scheduler(copy.deepcopy(tasks))
-        schedule = scheduler.schedule(schedule_type, verbose=True)
+        schedule = scheduler.schedule(schedule_type, verbose=False)
         
         # Calculate and retrieve metrics
         metrics = scheduler.calc_metrics(schedule)
