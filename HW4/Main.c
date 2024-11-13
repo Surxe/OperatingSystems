@@ -16,27 +16,41 @@ void print_tasks(Task tasks[], int num_tasks) {
 }
 
 void print_schedule(const char *schedule[], int len) {
-	//Iterate scheduled task names
-	for (int i=0; i< len; i++) {
-		const char *task = schedule[i];
-		char task_string[100] = "I"; //A task's string consisting of symbols # and _
-		//Assume 100 is sufficient string length		
+    // Array to track whether a task has been printed
+    int printed[len];  // Array to mark tasks as printed
+    for (int i = 0; i < len; i++) {
+        printed[i] = 0;  // Initialize to 0 (not printed)
+    }
 
-		//Iterate schedule task names again
-		//Append a symbol at a time to the task string for each time its in the task
-		for (int j=0; j < len; j++) {			
-			if (schedule[i]==schedule[j]) {
-				//Task is scheduled for this tick
-				strcat(task_string, "#");
-			}
-			else {
-				//Task is not scheduled for this tick
-				strcat(task_string, "_");
-			}
-		}
+    // Iterate over scheduled task names
+    for (int i = 0; i < len; i++) {
+        const char *task = schedule[i];
 
-		printf("%s: %s\n", schedule[i], task_string);
-	}
+        // Ignore empty task names and tasks that have already been printed
+        if (strcmp(task, "") == 0 || printed[i]) {
+            continue;
+        }
+
+        // Mark the task as printed
+        printed[i] = 1;
+
+        // Initialize the task string with a symbol
+        char task_string[100] = "";  // A task's string consisting of symbols # and _
+
+        // Iterate again to append a symbol at a time to the task string
+        for (int j = 0; j < len; j++) {
+            if (strcmp(schedule[i], schedule[j]) == 0) {
+                // Task is scheduled for this tick
+                strcat(task_string, "#");
+            } else {
+                // Task is not scheduled for this tick
+                strcat(task_string, "_");
+            }
+        }
+
+        // Print the task and its schedule string
+        printf("%s: %s\n", task, task_string);
+    }
 }
 
 int main() {
