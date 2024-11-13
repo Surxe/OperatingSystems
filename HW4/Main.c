@@ -16,23 +16,36 @@ void print_tasks(Task tasks[], int num_tasks) {
 }
 
 void print_schedule(const char *schedule[], int len) {
-    // Array to track whether a task has been printed
-    int printed[len];  // Array to mark tasks as printed
-    for (int i = 0; i < len; i++) {
-        printed[i] = 0;  // Initialize to 0 (not printed)
-    }
+    // Create a list to store already printed task names
+    char printed_names[len][100];  // Assuming max task name length of 100 characters
+    int printed_count = 0;  // Counter for how many tasks have been printed
 
-    // Iterate over scheduled task names
+    // Iterate over the scheduled task names
     for (int i = 0; i < len; i++) {
         const char *task = schedule[i];
 
-        // Ignore empty task names or tasks that have already been printed
-        if (strcmp(task, "") == 0 || printed[i]) {
+        // Skip empty task names
+        if (strcmp(task, "") == 0) {
             continue;
         }
 
-        // Mark the task as printed
-        printed[i] = 1;
+        // Check if this task has already been printed
+        int already_printed = 0;
+        for (int j = 0; j < printed_count; j++) {
+            if (strcmp(task, printed_names[j]) == 0) {
+                already_printed = 1;
+                break;
+            }
+        }
+
+        // If the task has already been printed, skip it
+        if (already_printed) {
+            continue;
+        }
+
+        // Add this task to the printed names list
+        strcpy(printed_names[printed_count], task);
+        printed_count++;
 
         // Initialize the task string with a symbol
         char task_string[100] = "";  // A task's string consisting of symbols # and _
