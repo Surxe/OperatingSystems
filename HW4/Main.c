@@ -6,6 +6,14 @@ typedef struct {
 	int burst_duration;
 } Task;
 
+void print_tasks(Task tasks[]) {
+	printf("Tasks:\n");
+	for (int i=0; i < sizeof(tasks)/sizeof(tasks[0]); i++) {
+		printf("Task Name: %s, Arrival Time: %d, Burst Duration %d\n",
+			tasks[i].name, tasks[i].arrival_time, tasks[i].burst_duration);
+	}
+}
+
 int main() {
 	//Use some input
 	Task input[] = {
@@ -14,8 +22,12 @@ int main() {
 		{"Task3Name", 2, 7},
 	};
 
-	int len = sizeof(input);	
-	printf("Testing");
-	printf("%d", len);
+	int len = sizeof(input) / sizeof(input[0]);	
+	printf("Testing\n");
+	printf("Num tasks: %d\n", len);
+	
+
+	print_tasks(input);
+
 	return 0;
 }
