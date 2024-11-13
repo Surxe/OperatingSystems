@@ -263,7 +263,7 @@ class Scheduler:
         """
         Calculate the average response time of the schedule.
         """
-        # Response time = start time - arrival time = first index of # - arrival time
+        # Response time = start time - arrival time = first Running tick - arrival time
         total_response = 0
         for task in self.tasks:
             response = schedule[task.name].index('Running') - task.arrival
@@ -278,7 +278,7 @@ class Scheduler:
         # Turnaround time = completion time - arrival time = last index of 'Completed' - arrival time
         total_turnaround = 0
         for task in self.tasks:
-            if '' not in schedule[task.name]:
+            if 'Completed' not in schedule[task.name]:
                 # The last task that finished
                 end = len(schedule[task.name])
             else:
@@ -295,12 +295,12 @@ class Scheduler:
         num_tasks_completed = 0
         for _, symbols in schedule.items():
             # Determine if the task was completed by t=num_cycles
-            if '' not in symbols:
+            if 'Completed' not in symbols:
                 continue
 
             # Find index of first instance of 'Completed' in symbols[]
             completed = symbols.index('Completed')
-            if completed < num_cycles:
+            if completed < num_cycles+1:
                 num_tasks_completed += 1
 
         return num_tasks_completed / num_cycles
