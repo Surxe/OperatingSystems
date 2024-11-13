@@ -1,100 +1,83 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+// Define a Task structure
 typedef struct {
-	const char *name;
-	int arrival_time;
-	int burst_duration;
+    const char *name;
+    int arrival_time;
+    int burst_duration;
 } Task;
 
-void print_tasks(Task tasks[], int num_tasks) {
-	printf("Tasks:\n");
-	for (int i=0; i < num_tasks; i++) {
-		printf("Task Name: %s, Arrival Time: %d, Burst Duration %d\n",
-			tasks[i].name, tasks[i].arrival_time, tasks[i].burst_duration);
-	}
+// Function to compare two strings for alphabetical order
+int compare_task_names(const void *a, const void *b) {
+    return strcmp(((Task *)a)->name, ((Task *)b)->name);
 }
 
-void print_schedule(const char *schedule[], int len) {
-    // Create a list to store already printed task names
-    char printed_names[len][100];  // Assuming max task name length of 100 characters
-    int printed_count = 0;  // Counter for how many tasks have been printed
-
-    // Iterate over the scheduled task names
-    for (int i = 0; i < len; i++) {
-        const char *task = schedule[i];
-
-        // Skip empty task names
-        if (strcmp(task, "") == 0) {
-            continue;
-        }
-
-        // Check if this task has already been printed
-        int already_printed = 0;
-        for (int j = 0; j < printed_count; j++) {
-            if (strcmp(task, printed_names[j]) == 0) {
-                already_printed = 1;
-                break;
-            }
-        }
-
-        // If the task has already been printed, skip it
-        if (already_printed) {
-            continue;
-        }
-
-        // Add this task to the printed names list
-        strcpy(printed_names[printed_count], task);
-        printed_count++;
-
-        // Initialize the task string with a symbol
-        char task_string[100] = "";  // A task's string consisting of symbols # and _
-
-        // Iterate again to append a symbol at a time to the task string
-        for (int j = 0; j < len; j++) {
-            if (strcmp(schedule[i], schedule[j]) == 0) {
-                // Task is scheduled for this tick
-                strcat(task_string, "#");
-            } else {
-                // Task is not scheduled for this tick
-                strcat(task_string, "_");
-            }
-        }
-
-        // Print the task and its schedule string
-        printf("%s: %s\n", task, task_string);
+// FIFO scheduling function
+char** schedule_FIFO(Task tasks[], int num_tasks) {
+    // Initialize an array to store the schedule output
+    char **schedule = (char **)malloc(num_tasks * sizeof(char *));
+    for (int i = 0; i < num_tasks; i++) {
+        schedule[i] = (char *)malloc(100 * sizeof(char)); // Assuming 100 chars are enough for each task
+        memset(schedule[i], 'x', 99);  // Initialize with 'x' (tasks not yet arrived)
+        schedule[i][99] = '\0'; // Null-terminate each schedule string
     }
+
+    // Sort tasks by arrival time and name if arrival times are the same
+    qsort(tasks, num_tasks, sizeof(Task), compare_task_names);
+
+    // Simulate the scheduling process over time
+    int current_time = 0; // Current time tick
+    int task_index = 0;   // Index for tasks to be executed
+    int tasks_completed = 0; // Counter for completed tasks
+
+    while (tasks_completed < num_tasks) {
+        // Check for available tasks
+        for (int i = task_index; i < num_tasks; i++) {
+            if (tasks[i].arrival_time <= current_time) {
+                // The task has arrived and can be scheduled
+                int len = strlen(schedule[i]);
+                schedule[i][current_time - tasks[i].arrival_time] = '#'; // Mark task execution
+                task_index = i + 1; // Move to the next task
+            }
+        }
+
+        // After checking all tasks, increment the time
+        current_time++;
+        tasks_completed++;
+    }
+
+    return schedule;
+}
+
+void free_schedule(char **schedule, int num_tasks) {
+    for (int i = 0; i < num_tasks; i++) {
+        free(schedule[i]);
+    }
+    free(schedule);
 }
 
 int main() {
-	//Use some input
-	Task input[] = {
-		{"Task1Name", 0, 1},
-		{"Task2Name", 1, 2},
-		{"Task3Name", 3, 3},
-	};
+    // Define an array of tasks
+    Task tasks[] = {
+        {"Task1", 5, 1},
+        {"Task2", 0, 2},
+        {"Task3", 1, 1}
+    };
+    
+    int num_tasks = sizeof(tasks) / sizeof(tasks[0]);
 
-	int len = sizeof(input) / sizeof(input[0]);	
-	printf("Scheduling %d tasks\n\n", len);
-	
+    // Get the FIFO schedule
+    char **schedule = schedule_FIFO(tasks, num_tasks);
 
-	print_tasks(input, len);
-	printf("\n");
+    // Print the schedule output for each task
+    for (int i = 0; i < num_tasks; i++) {
+        printf("%s: %s\n", tasks[i].name, schedule[i]);
+    }
 
-	const char *schedule[] = {
-		"Task1Name",
-		"Task2Name",
-		"Task2Name",
-		"",
-		"Task3Name",
-		"Task3Name",
-		"Task3Name",
-	};
+    // Free the dynamically allocated memory for the schedule
+    free_schedule(schedule, num_tasks);
 
-	int len_schedule = sizeof(schedule) / sizeof(schedule[0]);
-
-	printf("Schedule for (PLACEHOLDER)\n");
-	print_schedule(schedule, len_schedule);
-
-	return 0;
+    return 0;
 }
