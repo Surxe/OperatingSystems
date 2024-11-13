@@ -1,20 +1,24 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+// Define the Task struct
 typedef struct {
-	const char *name;
-	int arrival_time;
-	int burst_duration;
+    const char *name;      // Task name
+    int arrival_time;     // Time when the task arrives
+    int burst_duration;   // Duration for which the task runs
 } Task;
 
+// Function to print tasks
 void print_tasks(Task tasks[], int num_tasks) {
-	printf("Tasks:\n");
-	for (int i=0; i < num_tasks; i++) {
-		printf("Task Name: %s, Arrival Time: %d, Burst Duration %d\n",
-			tasks[i].name, tasks[i].arrival_time, tasks[i].burst_duration);
-	}
+    printf("Tasks:\n");
+    for (int i = 0; i < num_tasks; i++) {
+        printf("Task Name: %s, Arrival Time: %d, Burst Duration: %d\n",
+               tasks[i].name, tasks[i].arrival_time, tasks[i].burst_duration);
+    }
 }
 
+// Function to print the schedule
 void print_schedule(const char *schedule[], int len) {
     // Create a list to store already printed task names
     char printed_names[len][100];  // Assuming max task name length of 100 characters
@@ -66,35 +70,60 @@ void print_schedule(const char *schedule[], int len) {
     }
 }
 
+// Compare function to sort tasks based on arrival time
+int compare_tasks(const void *a, const void *b) {
+    Task *taskA = (Task*)a;
+    Task *taskB = (Task*)b;
+    return taskA->arrival_time - taskB->arrival_time;
+}
+
+// Function to schedule tasks using FIFO (First-In-First-Out)
+char** schedule_FIFO(Task tasks[], int num_tasks) {
+    // Sort the tasks by arrival time
+    qsort(tasks, num_tasks, sizeof(Task), compare_tasks);
+
+    // Print the tasks details after sorting
+    print_tasks(tasks, num_tasks);
+
+    // Allocate memory for the list of task names
+    char **scheduled_tasks = (char**)malloc(num_tasks * sizeof(char*));
+
+    // Fill the list with task names in FIFO order
+    for (int i = 0; i < num_tasks; i++) {
+        scheduled_tasks[i] = (char*)malloc(strlen(tasks[i].name) + 1);  // +1 for null terminator
+        strcpy(scheduled_tasks[i], tasks[i].name);
+    }
+
+    return scheduled_tasks;
+}
+
+// Function to free the memory allocated for the task list
+void free_scheduled_tasks(char **scheduled_tasks, int num_tasks) {
+    for (int i = 0; i < num_tasks; i++) {
+        free(scheduled_tasks[i]);
+    }
+    free(scheduled_tasks);
+}
+
 int main() {
-	//Use some input
-	Task input[] = {
-		{"Task1Name", 0, 1},
-		{"Task2Name", 1, 2},
-		{"Task3Name", 3, 3},
-	};
+    // Example tasks
+    Task tasks[] = {
+        {"Task1", 2, 5},
+        {"Task2", 0, 3},
+        {"Task3", 1, 4}
+    };
+    
+    int num_tasks = sizeof(tasks) / sizeof(tasks[0]);
 
-	int len = sizeof(input) / sizeof(input[0]);	
-	printf("Scheduling %d tasks\n\n", len);
-	
+    // Schedule the tasks using FIFO
+    char **scheduled_tasks = schedule_FIFO(tasks, num_tasks);
 
-	print_tasks(input, len);
-	printf("\n");
+    // Print the scheduled tasks in FIFO order
+    printf("\nScheduled tasks in FIFO order:\n");
+    print_schedule(scheduled_tasks, num_tasks);
 
-	const char *schedule[] = {
-		"Task1Name",
-		"Task2Name",
-		"Task2Name",
-		"",
-		"Task3Name",
-		"Task3Name",
-		"Task3Name",
-	};
+    // Free the dynamically allocated memory
+    free_scheduled_tasks(scheduled_tasks, num_tasks);
 
-	int len_schedule = sizeof(schedule) / sizeof(schedule[0]);
-
-	printf("Schedule for (PLACEHOLDER)\n");
-	print_schedule(schedule, len_schedule);
-
-	return 0;
+    return 0;
 }
