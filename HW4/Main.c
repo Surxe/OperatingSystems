@@ -19,17 +19,16 @@ void print_schedule(const char *schedule[], int len) {
 	//Iterate scheduled task names
 	for (int i=0; i< len; i++) {
 		const char *task = schedule[i];
-		char task_string[1] = "I"; //A task's string consisting of symbols # and _
-		
+		char task_string[100] = "I"; //A task's string consisting of symbols # and _
+		//Assume 100 is sufficient string length		
+
 		//Iterate schedule task names again
 		//Append a symbol at a time to the task string for each time its in the task
 		for (int j=0; j < len; j++) {
 			
 			if (1==1) {
 				//Append the symbol
-				int str_len = strlen(task_string);
-				task_string[str_len] = 'A';
-				task_string[len+1] = '\0';
+				strcat(task_string, "#");
 			}
 		}
 
@@ -46,11 +45,11 @@ int main() {
 	};
 
 	int len = sizeof(input) / sizeof(input[0]);	
-	printf("Testing\n");
-	printf("Num tasks: %d\n", len);
+	printf("Scheduling %d tasks\n\n", len);
 	
 
 	print_tasks(input, len);
+	printf("\n");
 
 	const char *schedule[] = {
 		"Task1Name",
@@ -60,6 +59,7 @@ int main() {
 
 	int len_schedule = sizeof(schedule) / sizeof(schedule[0]);
 
+	printf("Schedule for (PLACEHOLDER)\n");
 	print_schedule(schedule, len_schedule);
 
 	return 0;
