@@ -207,7 +207,7 @@ class Scheduler:
 
         return schedule
     
-    def _schedule_rr(self, verbose):
+    def _schedule_rr(self, verbose, quantum=1):
         """
         Schedule the tasks using the Round Robin scheduling algorithm.
         """
@@ -215,23 +215,17 @@ class Scheduler:
         current_tick = 0
         queue = []  # Queue of tasks to process in a round-robin manner
 
-        first_iteration = True
         while self._num_tasks_remaining() > 0:
             # Add tasks that have just arrived to the queue
             for task in self.tasks:
-                if not task.is_complete and task.arrival <= current_tick and task not in queue:
+                if not task.is_complete and task.arrival <= current_tick+1 and task not in queue:
                     queue.append(task)
 
             # Pop the first task in the queue, and run it
             current_task = queue.pop(0)
 
-            # Need to skip the first iteration to avoid double counting the first task
-            if first_iteration:
-                first_iteration = False
-                continue
-
             # Run the task for up to quantum=1 ticks
-            ticks_run = min(current_task.duration, 1)
+            ticks_run = min(current_task.duration, quantum)
 
             # Record ticks in the schedule for the task
             for _ in range(ticks_run):
@@ -269,27 +263,48 @@ class Scheduler:
         """
         Calculate the average response time of the schedule.
         """
+        # Response time = start time - arrival time = first index of # - arrival time
         total_response = 0
         for task in self.tasks:
-            response =  + schedule[task.name].count('_') + schedule[task.name].count('#')
+            response = schedule[task.name].index('#') - task.arrival
+            print(response)
             total_response += response
 
         return total_response / len(self.tasks)
+    
+    def _calc_avg_turnaround(self, schedule):
+        """
+        Calculate the average turnaround time of the schedule.
+        """
+        # Turnaround time = completion time - arrival time = last index of '' - arrival time
+        total_turnaround = 0
+        for task in self.tasks:
+            if '' not in schedule[task.name]:
+                # The last task that finished
+                end = len(schedule[task.name])
+            else:
+                end = schedule[task.name].index('')
+            turnaround = end - task.arrival
+            total_turnaround += turnaround
+
+        return total_turnaround / len(self.tasks)
 
     def _calc_avg_throughput(self, schedule, num_cycles=10):
         """
-        Calculate the average throughput of the schedule.
+        Calculate the average throughput of the schedule for the first `num_cycles` ticks.
         """
-        total_throughput = 0
-        for task in self.tasks:
-            if '' not in schedule[task.name]:
-                end = len(schedule[task.name])+1
-            else:
-                end = schedule[task.name].index('')
-            throughput = num_cycles / (end - task.arrival)
-            total_throughput += throughput
+        num_tasks_completed = 0
+        for _, symbols in schedule.items():
+            # Determine if the task was completed by t=num_cycles
+            if '' not in symbols:
+                continue
 
-        return total_throughput / len(self.tasks)
+            # Find index of first instance of '' in symbols[]
+            completed = symbols.index('')
+            if completed < num_cycles:
+                num_tasks_completed += 1
+
+        return num_tasks_completed / num_cycles
     
     def calc_metrics(self, schedule):
         """
@@ -298,6 +313,7 @@ class Scheduler:
         metrics = {}
         metrics['avg_wait'] = self._calc_avg_wait(schedule)
         metrics['avg_response'] = self._calc_avg_response(schedule)
+        metrics['avg_turnaround'] = self._calc_avg_turnaround(schedule)
         metrics['avg_throughput'] = self._calc_avg_throughput(schedule)
         return metrics
     
