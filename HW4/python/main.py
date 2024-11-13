@@ -73,7 +73,7 @@ class Scheduler:
         current_tick = 0
         while self._num_tasks_remaining() > 0:
             if verbose:
-                print(f'\nTick {current_tick}: ', end='')
+                print(f'Tick {current_tick}: \t', end='')
             # If there is no task running, determine the task to run
             if current_running_task is None:
                 # Otherwise, check if there is a task that has arrived
@@ -87,7 +87,7 @@ class Scheduler:
             if current_running_task is not None:
                 task_complete = self._tick_tasks(schedule, current_running_task, current_tick)
                 if verbose:
-                    print(f'Ticked task {current_running_task.name}, remaining duration {current_running_task.duration}')
+                    print(f'Ticked task {current_running_task.name}, \tremaining duration {current_running_task.duration}')
 
                 # Delay the task nullification to give a chance to print it
                 if task_complete:
@@ -112,7 +112,7 @@ class Scheduler:
 
         while self._num_tasks_remaining() > 0:
             if verbose:
-                print(f'\nTick {current_tick}: ', end='')
+                print(f'Tick {current_tick}: \t', end='')
 
             # Check if we need to pick a new task to run
             if current_running_task is None:
@@ -131,7 +131,7 @@ class Scheduler:
                 task_complete = self._tick_tasks(schedule, current_running_task, current_tick)
 
                 if verbose:
-                    print(f'Ticked task {current_running_task.name}, remaining duration {current_running_task.duration}')
+                    print(f'Ticked task {current_running_task.name}, \tremaining duration {current_running_task.duration}')
 
                 # Set to None if the task is complete
                 if task_complete:
@@ -151,7 +151,7 @@ class Scheduler:
 
         while self._num_tasks_remaining() > 0:
             if verbose:
-                print(f'Tick {current_tick}: ', end='')
+                print(f'Tick {current_tick}: \t', end='')
 
             # Filter tasks that have arrived by the current tick
             available_tasks = [task for task in self.tasks if not task.is_complete and task.arrival <= current_tick]
@@ -171,7 +171,7 @@ class Scheduler:
                 task_complete = self._tick_tasks(schedule, current_running_task, current_tick)
 
                 if verbose:
-                    print(f'Ticked task {current_running_task.name}, remaining duration {current_running_task.duration}')
+                    print(f'Ticked task {current_running_task.name}, \tremaining duration {current_running_task.duration}')
 
                 # Remove the completed task
                 if task_complete:
@@ -187,11 +187,22 @@ class Scheduler:
     def _schedule_rr(self, verbose):
         schedule = {task.name: [] for task in self.tasks}  # Initialize schedule output
         current_tick = 0
-        queue = list(self.tasks)  # Queue of tasks to process in a round-robin manner
+        queue = []  # Queue of tasks to process in a round-robin manner
 
-        while queue:
-            # Pop the first task in the queue
+        first_iteration = True
+        while self._num_tasks_remaining() > 0:
+            # Add tasks that have just arrived to the queue
+            for task in self.tasks:
+                if not task.is_complete and task.arrival <= current_tick and task not in queue:
+                    queue.append(task)
+
+            # Pop the first task in the queue, and run it
             current_task = queue.pop(0)
+
+            # Need to skip the first iteration to avoid double counting the first task
+            if first_iteration:
+                first_iteration = False
+                continue
 
             # Run the task for up to quantum=1 ticks
             ticks_run = min(current_task.duration, 1)
@@ -203,10 +214,11 @@ class Scheduler:
                 
                 # tick_tasks returns True if the task is complete, and decrements duration
                 self._tick_tasks(schedule, current_task, current_tick)
-                current_tick += 1
 
                 if verbose:
-                    print(f'Tick {current_tick}: Ticked task {current_task.name}, remaining duration {current_task.duration}')
+                    print(f'Tick {current_tick}: \tTicked task {current_task.name}, \tremaining duration {current_task.duration}, \tremaining queue: {[task.name for task in queue]}')
+
+                current_tick += 1
 
             # Re-add the task to the queue only if it has remaining duration
             if not current_task.is_complete:
