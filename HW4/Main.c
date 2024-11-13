@@ -24,11 +24,14 @@ void print_schedule(const char *schedule[], int len) {
 
 		//Iterate schedule task names again
 		//Append a symbol at a time to the task string for each time its in the task
-		for (int j=0; j < len; j++) {
-			
-			if (1==1) {
-				//Append the symbol
+		for (int j=0; j < len; j++) {			
+			if (schedule[i]==schedule[j]) {
+				//Task is scheduled for this tick
 				strcat(task_string, "#");
+			}
+			else {
+				//Task is not scheduled for this tick
+				strcat(task_string, "_");
 			}
 		}
 
@@ -39,9 +42,9 @@ void print_schedule(const char *schedule[], int len) {
 int main() {
 	//Use some input
 	Task input[] = {
-		{"Task1Name", 0, 5},
-		{"Task2Name", 1, 6},
-		{"Task3Name", 2, 7},
+		{"Task1Name", 0, 1},
+		{"Task2Name", 1, 2},
+		{"Task3Name", 3, 3},
 	};
 
 	int len = sizeof(input) / sizeof(input[0]);	
@@ -54,6 +57,10 @@ int main() {
 	const char *schedule[] = {
 		"Task1Name",
 		"Task2Name",
+		"Task2Name",
+		"",
+		"Task3Name",
+		"Task3Name",
 		"Task3Name",
 	};
 
