@@ -10,7 +10,6 @@ class Task:
         self.name = name
         self.arrival = arrival
         self.duration = duration
-        self.orig_duration = duration
         self.is_complete = False
 
     def __str__(self):
@@ -152,7 +151,7 @@ class Scheduler:
 
         while self._num_tasks_remaining() > 0:
             if verbose:
-                print(f'\nTick {current_tick}: ', end='')
+                print(f'Tick {current_tick}: ', end='')
 
             # Filter tasks that have arrived by the current tick
             available_tasks = [task for task in self.tasks if not task.is_complete and task.arrival <= current_tick]
@@ -199,14 +198,17 @@ class Scheduler:
 
             # Record ticks in the schedule for the task
             for _ in range(ticks_run):
+                if current_task.is_complete:
+                    break
+                # tick_tasks returns True if the task is complete, and decrements duration
                 self._tick_tasks(schedule, current_task, current_tick)
                 current_tick += 1
 
-            if verbose:
-                print(f'Tick {current_tick - ticks_run} to {current_tick - 1}: Task {current_task.name} ran for {ticks_run} ticks; remaining duration {current_task.duration}')
+                if verbose:
+                    print(f'Tick {current_tick}: Ticked task {current_task.name}, remaining duration {current_task.duration}')
 
             # If the task still has remaining duration, add it back to the end of the queue
-            if current_task.duration > 0:
+            if not current_task.is_complete:
                 queue.append(current_task)
 
         return schedule
@@ -215,7 +217,8 @@ class Scheduler:
         # Calculate the average wait time
         total_wait = 0
         for task in self.tasks:
-            wait = schedule[task.name].index('#') - task.arrival
+            # Count # elems that are '-'
+            wait = schedule[task.name].count('_')
             total_wait += wait
 
         return total_wait / len(self.tasks)
@@ -224,7 +227,7 @@ class Scheduler:
         # Calculate the average response time
         total_response = 0
         for task in self.tasks:
-            response = schedule[task.name].index('#') - task.arrival
+            response =  + schedule[task.name].count('_') + schedule[task.name].count('#')
             total_response += response
 
         return total_response / len(self.tasks)
@@ -291,6 +294,8 @@ def main():
     """
     Main function to test various scheduling techniques.
     """
+
+    # (name, arrival, duration)
     tasks = [
         Task('A', 0, 5),
         Task('B', 1, 3),
@@ -307,7 +312,7 @@ def main():
         # Schedule the tasks
         print(f'==={schedule_type}===')
         scheduler = Scheduler(copy.deepcopy(tasks))
-        schedule = scheduler.schedule(schedule_type, verbose=False)
+        schedule = scheduler.schedule(schedule_type, verbose=True)
         
         # Calculate and retrieve metrics
         metrics = scheduler.calc_metrics(schedule)
