@@ -1,5 +1,5 @@
 import copy
-
+import os
 
 class Task:
     """
@@ -356,7 +356,7 @@ class Scheduler:
         }
 
         for task, symbols in schedule.items():
-            print(f'{task}: ', end='')
+            print(f'{task}: \t', end='')
             for symbol in symbols:
                 print(status_to_symbol[symbol], end='')
             print()
@@ -368,7 +368,7 @@ def create_tasks(path):
     tasks = []
     with open(path, 'r') as f:
         for line in f:
-            name, duration, arrival = line.strip().split(' ')
+            name, duration, arrival = line.split()
             tasks.append(Task(name, int(arrival), int(duration)))
 
     return tasks
@@ -388,24 +388,28 @@ def main():
     """
 
     # (name, arrival, duration)
-    tasks = create_tasks('HW4/python/tasks.txt')
+    # Load task lists from tasks dir
+    for file_name in os.listdir('HW4/python/tasks'):
+        print(f'=={file_name}==')
+        tasks = create_tasks(f'HW4/python/tasks/{file_name}')
 
-    print_tasks(tasks)
+        print_tasks(tasks)
 
-    # Test all scheduler types
-    scheduler_types_to_test = ['FIFO', 'SJF', 'SRTF', 'RR']
-    for schedule_type in scheduler_types_to_test:
-        # Schedule the tasks
-        print(f'==={schedule_type}===')
-        scheduler = Scheduler(copy.deepcopy(tasks))
-        schedule = scheduler.schedule(schedule_type, verbose=False)
-        
-        # Calculate and retrieve metrics
-        metrics = scheduler.calc_metrics(schedule)
-        scheduler.print_metrics(metrics)
+        # Test all scheduler types
+        scheduler_types_to_test = ['FIFO', 'SJF', 'SRTF', 'RR']
+        for schedule_type in scheduler_types_to_test:
+            # Schedule the tasks
+            print(f'==={schedule_type}===')
+            scheduler = Scheduler(copy.deepcopy(tasks))
+            schedule = scheduler.schedule(schedule_type, verbose=False)
+            
+            # Calculate and retrieve metrics
+            metrics = scheduler.calc_metrics(schedule)
+            scheduler.print_metrics(metrics)
 
-        # Print the schedule
-        scheduler.print_schedule(schedule)
+            # Print the schedule
+            scheduler.print_schedule(schedule)
+            print()
         print()
 
 if __name__ == '__main__':
