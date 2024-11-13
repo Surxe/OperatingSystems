@@ -16,10 +16,17 @@ class Task:
         return f'{self.name}: Arrival={self.arrival}, Duration={self.duration})'
 
     def _is_complete(self):
+        """
+        Check if the task has completed.
+        """
         self.is_complete = self.duration == 0
         return self.is_complete
 
     def tick(self):
+        """
+        Tick the task by decrementing the duration by 1.
+        Return whether or not the task has completed.
+        """
         self.duration -= 1
         return self._is_complete()
 
@@ -35,6 +42,10 @@ class Scheduler:
         self.tasks = tasks
 
     def _tick_tasks(self, schedule, task_to_run, current_tick):
+        """
+        Tick the tasks in the schedule.
+        Add a symbol to each task's schedule entry to represent the current tick.
+        """
         # Mark the current running task
         schedule[task_to_run.name].append('#')
 
@@ -54,10 +65,16 @@ class Scheduler:
         return task_to_run.tick()
     
     def _num_tasks_remaining(self):
+        """
+        Return the number of tasks that have not yet completed.
+        """
         return sum([1 for task in self.tasks if not task.is_complete])
         
     # Private members  
     def _schedule_fifo(self, verbose):
+        """
+        Schedule the tasks using the First In First Out (FIFO) scheduling algorithm.
+        """
         self.tasks = sorted(self.tasks, key=lambda task: task.arrival)
         # i.e. [Task('A', 0, 5), Task('B', 1, 3), Task('C', 2, 2)]
 
@@ -101,6 +118,9 @@ class Scheduler:
         return schedule
     
     def _schedule_sjf(self, verbose):
+        """
+        Schedule the tasks using the Shortest Job First (SJF) scheduling algorithm.
+        """
         # Sort tasks by arrival time as primary key and duration as secondary key for SJF
         self.tasks = sorted(self.tasks, key=lambda task: (task.arrival, task.duration))
         
@@ -145,6 +165,9 @@ class Scheduler:
         return schedule
     
     def _schedule_srtf(self, verbose):
+        """
+        Schedule the tasks using the Shortest Remaining Time First (SRTF) scheduling algorithm.
+        """
         schedule = {task.name: [] for task in self.tasks}  # Initialize schedule output
         current_tick = 0
         current_running_task = None
@@ -185,6 +208,9 @@ class Scheduler:
         return schedule
     
     def _schedule_rr(self, verbose):
+        """
+        Schedule the tasks using the Round Robin scheduling algorithm.
+        """
         schedule = {task.name: [] for task in self.tasks}  # Initialize schedule output
         current_tick = 0
         queue = []  # Queue of tasks to process in a round-robin manner
@@ -228,7 +254,9 @@ class Scheduler:
 
     
     def _calc_avg_wait(self, schedule):
-        # Calculate the average wait time
+        """
+        Calculate the average wait time of the schedule.
+        """
         total_wait = 0
         for task in self.tasks:
             # Count # elems that are '-'
@@ -238,7 +266,9 @@ class Scheduler:
         return total_wait / len(self.tasks)
 
     def _calc_avg_response(self, schedule):
-        # Calculate the average response time
+        """
+        Calculate the average response time of the schedule.
+        """
         total_response = 0
         for task in self.tasks:
             response =  + schedule[task.name].count('_') + schedule[task.name].count('#')
@@ -247,7 +277,9 @@ class Scheduler:
         return total_response / len(self.tasks)
 
     def _calc_avg_throughput(self, schedule, num_cycles=10):
-        # Calculate the average throughput
+        """
+        Calculate the average throughput of the schedule.
+        """
         total_throughput = 0
         for task in self.tasks:
             if '' not in schedule[task.name]:
@@ -260,6 +292,9 @@ class Scheduler:
         return total_throughput / len(self.tasks)
     
     def calc_metrics(self, schedule):
+        """
+        Calculate the metrics for the schedule.
+        """
         metrics = {}
         metrics['avg_wait'] = self._calc_avg_wait(schedule)
         metrics['avg_response'] = self._calc_avg_response(schedule)
@@ -267,11 +302,17 @@ class Scheduler:
         return metrics
     
     def print_metrics(self, metrics):
+        """
+        Print the metrics in a human-readable format.
+        """
         for key, value in metrics.items():
             print(f'{key}: {value:.2f}')
 
     # Public members
     def schedule(self, schedule_type='FIFO', verbose=True):
+        """
+        Schedule the tasks using the specified scheduling algorithm.
+        """
         schedule_map = {
             'FIFO': self._schedule_fifo,
             'SJF': self._schedule_sjf,
@@ -285,6 +326,9 @@ class Scheduler:
         return schedule_map[schedule_type](verbose)
 
     def print_schedule(self, schedule):
+        """
+        Print the schedule in a human-readable format.
+        """
         # schedule i.e. 
         # {
         # 'A': ['-', '-', '_', '#', '#', '']
@@ -298,7 +342,22 @@ class Scheduler:
         for task, symbols in schedule.items():
             print(f'{task}: {"".join(symbols)}')
 
+def create_tasks(path):
+    """
+    Create tasks from a file.
+    """
+    tasks = []
+    with open(path, 'r') as f:
+        for line in f:
+            name, duration, arrival = line.strip().split(' ')
+            tasks.append(Task(name, int(arrival), int(duration)))
+
+    return tasks
+
 def print_tasks(tasks):
+    """
+    Print the current tasks
+    """
     print('Current tasks:')
     for task in tasks:
         print(task)
@@ -310,13 +369,7 @@ def main():
     """
 
     # (name, arrival, duration)
-    tasks = [
-        Task('A', 0, 5),
-        Task('B', 1, 3),
-        Task('C', 2, 2),
-        Task('D', 3, 4),
-        Task('E', 4, 1)
-    ]
+    tasks = create_tasks('HW4/python/tasks.txt')
 
     print_tasks(tasks)
 
