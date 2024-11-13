@@ -26,7 +26,7 @@ void print_schedule(const char *schedule[], int len) {
     for (int i = 0; i < len; i++) {
         const char *task = schedule[i];
 
-        // Ignore empty task names and tasks that have already been printed
+        // Ignore empty task names or tasks that have already been printed
         if (strcmp(task, "") == 0 || printed[i]) {
             continue;
         }
