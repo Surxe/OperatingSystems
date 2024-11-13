@@ -47,17 +47,17 @@ class Scheduler:
         Add a symbol to each task's schedule entry to represent the current tick.
         """
         # Mark the current running task
-        schedule[task_to_run.name].append('#')
+        schedule[task_to_run.name].append('Running')
 
         # Mark the tasks that aren't running
         for task in self.tasks:
             if task != task_to_run:
                 if task.duration == 0:
-                    symbol = '' # already completed
+                    symbol = 'Completed' # already completed
                 elif task.arrival <= current_tick:
-                    symbol = '_' #arrived but not running
+                    symbol = 'Waiting' #arrived but not running
                 else:
-                    symbol = '-' #not yet arrived
+                    symbol = 'Not Arrived' #not yet arrived
                     
                 schedule[task.name].append(symbol)
 
@@ -253,8 +253,8 @@ class Scheduler:
         """
         total_wait = 0
         for task in self.tasks:
-            # Count # elems that are '-'
-            wait = schedule[task.name].count('_')
+            # Count # elems that are 'Waiting'
+            wait = schedule[task.name].count('Waiting')
             total_wait += wait
 
         return total_wait / len(self.tasks)
@@ -266,8 +266,7 @@ class Scheduler:
         # Response time = start time - arrival time = first index of # - arrival time
         total_response = 0
         for task in self.tasks:
-            response = schedule[task.name].index('#') - task.arrival
-            print(response)
+            response = schedule[task.name].index('Running') - task.arrival
             total_response += response
 
         return total_response / len(self.tasks)
@@ -276,14 +275,14 @@ class Scheduler:
         """
         Calculate the average turnaround time of the schedule.
         """
-        # Turnaround time = completion time - arrival time = last index of '' - arrival time
+        # Turnaround time = completion time - arrival time = last index of 'Completed' - arrival time
         total_turnaround = 0
         for task in self.tasks:
             if '' not in schedule[task.name]:
                 # The last task that finished
                 end = len(schedule[task.name])
             else:
-                end = schedule[task.name].index('')
+                end = schedule[task.name].index('Completed')
             turnaround = end - task.arrival
             total_turnaround += turnaround
 
@@ -299,8 +298,8 @@ class Scheduler:
             if '' not in symbols:
                 continue
 
-            # Find index of first instance of '' in symbols[]
-            completed = symbols.index('')
+            # Find index of first instance of 'Completed' in symbols[]
+            completed = symbols.index('Completed')
             if completed < num_cycles:
                 num_tasks_completed += 1
 
@@ -347,16 +346,20 @@ class Scheduler:
         """
         # schedule i.e. 
         # {
-        # 'A': ['-', '-', '_', '#', '#', '']
+        # 'A': ['Not Arrived', 'Not Arrived', 'Waiting', 'Running', 'Running', 'Completed']
         # }
-        # symbols:
-        # '-' - not yet arrived
-        # '_' - arrived, but not started
-        # '#' - started/running
-        # '' - completed
+        status_to_symbol = {
+            'Not Arrived': '-',
+            'Waiting': '_',
+            'Running': '#',
+            'Completed': ''
+        }
 
         for task, symbols in schedule.items():
-            print(f'{task}: {"".join(symbols)}')
+            print(f'{task}: ', end='')
+            for symbol in symbols:
+                print(status_to_symbol[symbol], end='')
+            print()
 
 def create_tasks(path):
     """
