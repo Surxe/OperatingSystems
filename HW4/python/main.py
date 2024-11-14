@@ -243,8 +243,8 @@ class Scheduler:
                 current_tick += 1
 
             # Re-add the task to the queue only if it has remaining duration
-            if not current_task.is_complete:
-                queue.append(current_task)
+            #if not current_task.is_complete:
+                #queue.append(current_task)
 
         return schedule
 
@@ -404,7 +404,7 @@ def main():
             # Schedule the tasks
             print(f'==={schedule_type}===')
             scheduler = Scheduler(copy.deepcopy(tasks))
-            schedule = scheduler.schedule(schedule_type, verbose=False)
+            schedule = scheduler.schedule(schedule_type, verbose=True)
             
             # Calculate and retrieve metrics
             metrics = scheduler.calc_metrics(schedule)
