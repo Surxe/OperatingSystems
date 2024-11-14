@@ -215,11 +215,12 @@ class Scheduler:
         schedule = {task.name: [] for task in self.tasks}  # Initialize schedule output
         current_tick = 0
         queue = []  # Queue of tasks to process in a round-robin manner
+        first_push = True
 
         while self._num_tasks_remaining() > 0:
             # Add tasks that have just arrived to the queue
             for task in self.tasks:
-                if not task.is_complete and task.arrival <= current_tick and task not in queue:
+                if not task.is_complete and task.arrival <= current_tick+1 and task not in queue:
                     queue.append(task)
 
             # Pop the first task in the queue, and run it if the queue is not empty
@@ -243,8 +244,11 @@ class Scheduler:
                 current_tick += 1
 
             # Re-add the task to the queue only if it has remaining duration
-            #if not current_task.is_complete:
-                #queue.append(current_task)
+            if not current_task.is_complete:
+                # if first_push:
+                #     first_push = False
+                #     continue
+                queue.append(current_task)
 
         return schedule
 
@@ -404,7 +408,7 @@ def main():
             # Schedule the tasks
             print(f'==={schedule_type}===')
             scheduler = Scheduler(copy.deepcopy(tasks))
-            schedule = scheduler.schedule(schedule_type, verbose=True)
+            schedule = scheduler.schedule(schedule_type, verbose=False)
             
             # Calculate and retrieve metrics
             metrics = scheduler.calc_metrics(schedule)
