@@ -40,6 +40,7 @@ class Scheduler:
     # Constructor
     def __init__(self, tasks):
         self.tasks = tasks
+        self.task_names = [task.name for task in tasks] #unsorted and unaltered
 
     def _tick_tasks(self, schedule, task_to_run, current_tick):
         """
@@ -218,20 +219,17 @@ class Scheduler:
         while self._num_tasks_remaining() > 0:
             # Add tasks that have just arrived to the queue
             for task in self.tasks:
-                if not task.is_complete and task.arrival <= current_tick+1 and task not in queue:
+                if not task.is_complete and task.arrival <= current_tick and task not in queue:
                     queue.append(task)
 
             # Pop the first task in the queue, and run it
             current_task = queue.pop(0)
 
-            # Run the task for up to quantum=1 ticks
+            # Run the task for up to quantum ticks
             ticks_run = min(current_task.duration, quantum)
 
             # Record ticks in the schedule for the task
             for _ in range(ticks_run):
-                if current_task.is_complete:
-                    break  # If task is complete, exit the tick loop
-                
                 # tick_tasks returns True if the task is complete, and decrements duration
                 self._tick_tasks(schedule, current_task, current_tick)
 
@@ -355,8 +353,9 @@ class Scheduler:
             'Completed': ''
         }
 
-        for task, symbols in schedule.items():
-            print(f'{task}: \t', end='')
+        for task_name in self.task_names:
+            symbols = schedule[task_name]
+            print(f'{task_name}: \t', end='')
             for symbol in symbols:
                 print(status_to_symbol[symbol], end='')
             print()
