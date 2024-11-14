@@ -222,8 +222,12 @@ class Scheduler:
                 if not task.is_complete and task.arrival <= current_tick and task not in queue:
                     queue.append(task)
 
-            # Pop the first task in the queue, and run it
-            current_task = queue.pop(0)
+            # Pop the first task in the queue, and run it if the queue is not empty
+            if queue:
+                current_task = queue.pop(0)
+            else:
+                current_tick += 1
+                continue
 
             # Run the task for up to quantum ticks
             ticks_run = min(current_task.duration, quantum)
