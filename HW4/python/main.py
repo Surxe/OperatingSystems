@@ -306,7 +306,7 @@ class Scheduler:
 
             # Find index of first instance of 'Completed' in symbols[]
             completed = symbols.index('Completed')
-            if completed < num_cycles+1:
+            if completed < num_cycles:
                 num_tasks_completed += 1
 
         return num_tasks_completed / num_cycles
