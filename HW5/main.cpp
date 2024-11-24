@@ -63,21 +63,21 @@ void* thread_function(void* arg) {
 
         if (acquire_semaphores(needed_semaphores)) {
             for (int sem_id : needed_semaphores) {
-                std::cout << "Thread " << data->id << " has obtained semaphore " << sem_id << std::endl;
+                std::cout << "Thread " << data->id << " has obtained an ultra cool semaphore " << sem_id << std::endl;
             }
 
-            std::cout << "Doing work on thread " << data->id << ", " << data->work - 1 << " work left.\n";
+            std::cout << "Doing god's work on thread " << data->id << ", " << data->work - 1 << " work units left to slave away.\n";
             data->work--;
 
             // Release semas
             for (int sem_id : needed_semaphores) {
-                std::cout << "Thread " << data->id << " is releasing semaphore " << sem_id << std::endl;
+                std::cout << "Thread " << data->id << " is releasing semaphore " << sem_id << " from prison." << std::endl;
                 sem_post(&semaphores[sem_id]);
             }
 
             random_sleep();
         } else {
-            std::cout << "Thread " << data->id << " could not obtain required semaphores. Retrying...\n";
+            std::cout << "Thread " << data->id << " could not obtain required semaphores. Retrying the captures..\n";
             random_sleep();
         }
     }
@@ -113,6 +113,6 @@ int main() {
         sem_destroy(&semaphores[i]);
     }
 
-    std::cout << "All threads completed successfully!\n";
+    std::cout << "All slav-er.. threads* completed successfully!\n";
     return 0;
 }
