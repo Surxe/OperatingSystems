@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <chrono>
 #include <thread>
+#include <cstdlib>
+#include <ctime>
 
 #define NUM_THREADS 4
 #define NUM_SEMAPHORES 3
@@ -84,6 +86,9 @@ void* thread_function(void* arg) {
 }
 
 int main() {
+    // Seed the RNG
+    srand(time(nullptr));
+
     pthread_t threads[NUM_THREADS];
     ThreadData thread_data[NUM_THREADS];
 
