@@ -66,7 +66,7 @@ void* thread_function(void* arg) {
                 std::cout << "Thread " << data->id << " has obtained semaphore " << sem_id << std::endl;
             }
 
-            std::cout << "Doing work on thread " << data->id << ", " << data->work - 1 << " work left." << std::endl;
+            std::cout << "Doing work on thread " << data->id << ", " << data->work - 1 << " work left.\n";
             data->work--;
 
             // Release semas
@@ -77,7 +77,7 @@ void* thread_function(void* arg) {
 
             random_sleep();
         } else {
-            std::cout << "Thread " << data->id << " could not obtain required semaphores. Retrying..." << std::endl;
+            std::cout << "Thread " << data->id << " could not obtain required semaphores. Retrying...\n";
             random_sleep();
         }
     }
@@ -113,6 +113,6 @@ int main() {
         sem_destroy(&semaphores[i]);
     }
 
-    std::cout << "All threads completed successfully!" << std::endl;
+    std::cout << "All threads completed successfully!\n";
     return 0;
 }
