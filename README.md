@@ -12,3 +12,6 @@ To create a bash that passes commands to exec and supports piping
 
 # HW4
 To create a task scheduler for First come first serve, shortest job first, and round robin
+
+# HW5
+To create a workload balancer for semaphores that prevents deadlocks
