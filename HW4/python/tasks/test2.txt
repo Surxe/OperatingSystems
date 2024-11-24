@@ -1,0 +1,4 @@
+Clock 3 0
+Map 10 1
+Mouse 3 2
+Key 5 2
