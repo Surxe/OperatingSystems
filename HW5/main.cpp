@@ -17,24 +17,23 @@
 
 sem_t semaphores[NUM_SEMAPHORES];  // Array of semaphores
 
-// Thread data structure
 struct ThreadData {
     int id;
     int work;
 };
 
-// Function to simulate random delay (0-10 ms)
+// Delay thread randomly
 void random_sleep() {
     int sleep_time = rand() % 11;
     std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
 }
 
-// Function to acquire multiple semaphores
+// Acquire multiple semaphores
 bool acquire_semaphores(std::vector<int>& needed_semaphores) {
-    // Try to lock all semaphores, release if any fail
+    // Lock all semas, release if any fail
     for (int sem_id : needed_semaphores) {
-        if (sem_trywait(&semaphores[sem_id]) != 0) {  // Check if semaphore is available
-            // Release any semaphores already acquired
+        if (sem_trywait(&semaphores[sem_id]) != 0) {  // Check if sema is avail
+            // Release acquired semas
             for (int released_sem : needed_semaphores) {
                 if (released_sem == sem_id) break;
                 sem_post(&semaphores[released_sem]);
@@ -45,16 +44,16 @@ bool acquire_semaphores(std::vector<int>& needed_semaphores) {
     return true;
 }
 
-// Function for thread work
+// The function that each thread runs
 void* thread_function(void* arg) {
     ThreadData* data = (ThreadData*)arg;
-    srand(time(nullptr) + data->id);  // Seed the random generator for each thread
+    srand(time(nullptr) + data->id);  // Seed the RNG again
 
     while (data->work > 0) {
-        int num_semaphores_needed = rand() % NUM_SEMAPHORES + 1;  // Random number between 1-3
+        int num_semaphores_needed = rand() % NUM_SEMAPHORES + 1;  // [1,2,3]
         std::vector<int> needed_semaphores;
 
-        // Choose unique semaphores
+        // Choose unique semas
         while (needed_semaphores.size() < num_semaphores_needed) {
             int sem_id = rand() % NUM_SEMAPHORES;
             if (std::find(needed_semaphores.begin(), needed_semaphores.end(), sem_id) == needed_semaphores.end()) {
@@ -70,7 +69,7 @@ void* thread_function(void* arg) {
             std::cout << "Doing work on thread " << data->id << ", " << data->work - 1 << " work left." << std::endl;
             data->work--;
 
-            // Release semaphores
+            // Release semas
             for (int sem_id : needed_semaphores) {
                 std::cout << "Thread " << data->id << " is releasing semaphore " << sem_id << std::endl;
                 sem_post(&semaphores[sem_id]);
@@ -92,13 +91,10 @@ int main() {
     pthread_t threads[NUM_THREADS];
     ThreadData thread_data[NUM_THREADS];
 
-    // Initialize semaphores
+    // Initialize semas
     for (int i = 0; i < NUM_SEMAPHORES; ++i) {
-        sem_init(&semaphores[i], 0, 1);  // Binary semaphore
+        sem_init(&semaphores[i], 0, 1);  // Binary sema
     }
-
-    // Seed the random number generator
-    srand(time(nullptr));
 
     // Create threads
     for (int i = 0; i < NUM_THREADS; ++i) {
@@ -112,7 +108,7 @@ int main() {
         pthread_join(threads[i], nullptr);
     }
 
-    // Destroy semaphores
+    // Destroy semas
     for (int i = 0; i < NUM_SEMAPHORES; ++i) {
         sem_destroy(&semaphores[i]);
     }
