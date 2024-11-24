@@ -49,14 +49,16 @@ void* thread_function(void* arg) {
     srand(time(nullptr) + data->id);  // Seed the random generator for each thread
 
     while (data->work > 0) {
-        size_t num_semaphores_needed = rand() % NUM_SEMAPHORES + 1;  // Change to size_t
+        int num_semaphores_needed = rand() % NUM_SEMAPHORES + 1;  // Random number between 1-3
+        std::vector<int> needed_semaphores;
+
+        // Choose unique semaphores
         while (needed_semaphores.size() < num_semaphores_needed) {
             int sem_id = rand() % NUM_SEMAPHORES;
             if (std::find(needed_semaphores.begin(), needed_semaphores.end(), sem_id) == needed_semaphores.end()) {
                 needed_semaphores.push_back(sem_id);
             }
         }
-
 
         if (acquire_semaphores(needed_semaphores)) {
             for (int sem_id : needed_semaphores) {
