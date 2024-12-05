@@ -25,7 +25,7 @@ struct ThreadData {
 // Delay thread randomly
 void random_sleep() {
     int sleep_time = rand() % 11;
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
+    //std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
 }
 
 // Acquire multiple semaphores
